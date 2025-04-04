@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { getCustomFieldId } = require('../config/config-helper');
 
 class ClickUpService {
     apiKey = 'pk_61405013_J7LUL9D1W7RR3WH7HURV3JMWFIWMO2T0'
@@ -174,25 +173,16 @@ class ClickUpService {
         return response;
     }
 
-    getCustomFields(task, customFieldsToCopy = []) {
-        const _customFieldIdsToCopy = customFieldsToCopy.map(field => getCustomFieldId(field));
-        const result = [];
-        task.custom_fields.forEach(customField => {
-            if (_customFieldIdsToCopy.includes(customField.id)) {
-                if (customField.type === 'drop_down') {
-                    const options = customField.type_config.options;
-                    const value = options.find(option => option.orderindex === customField.value)?.id;
-                    if (value) {
-                        result.push({ key: customField.id, value });
-                    }
-                } else {
-                    result.push({ key: customField.id, value: customField.value });
-                }
-            }
+    async getCustomItems() {
+        const url = `${this.clickupBaseUrl}/team/8631005/custom_item`;
+        const data = await this.makeClickUpRequest(url);
+        return data;
+    }
 
-        });
-
-        return result;
+    async createTask(listId, data) {
+        const url = `${this.clickupBaseUrl}/list/${listId}/task`;
+        const response = await this.makeClickUpRequest(url, 'POST', data);
+        return response;
     }
 }
 
