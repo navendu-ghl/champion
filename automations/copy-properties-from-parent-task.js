@@ -1,5 +1,6 @@
 const AutomationBase = require('../automation-base');
 const ClickUpService = require('../services/clickupService');
+const ClickUpHelper = require('../clickup-helper');
 
 class CopyPropertiesFromParentTaskAutomation extends AutomationBase {
     constructor(config) {
@@ -25,7 +26,8 @@ class CopyPropertiesFromParentTaskAutomation extends AutomationBase {
 
             // copy custom fields from parent task
             const customFieldsToCopy = ['📚 Module', '📚 Sub-Module', '📖 Category'];
-            const customFields = this.clickupService.getCustomFields(parentTask, customFieldsToCopy);
+            const clickUpHelper = new ClickUpHelper(task.custom_fields);
+            const customFields = clickUpHelper.copyCustomFields(parentTask, customFieldsToCopy);
             console.log({ customFields: JSON.stringify(customFields, null, 2) });
 
             await Promise.all(customFields.map(async (customField) => {

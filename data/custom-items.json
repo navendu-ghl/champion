@@ -1,0 +1,102 @@
+[
+    {
+        "id": 1,
+        "name": "milestone",
+        "name_plural": null,
+        "description": null,
+        "avatar": {
+            "source": null,
+            "value": null
+        }
+    },
+    {
+        "id": 3,
+        "name": "form_response",
+        "name_plural": null,
+        "description": null,
+        "avatar": {
+            "source": null,
+            "value": null
+        }
+    },
+    {
+        "id": 1001,
+        "name": "Bug",
+        "name_plural": "Bugs",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "bug"
+        }
+    },
+    {
+        "id": 1002,
+        "name": "Backlog Item",
+        "name_plural": "Backlog Items",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "marker"
+        }
+    },
+    {
+        "id": 1003,
+        "name": "Epic",
+        "name_plural": "Epics",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "trophy"
+        }
+    },
+    {
+        "id": 1005,
+        "name": "User Story",
+        "name_plural": "User Stories",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "circle-user"
+        }
+    },
+    {
+        "id": 1006,
+        "name": "Release",
+        "name_plural": "Releases",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "hard-drive"
+        }
+    },
+    {
+        "id": 1007,
+        "name": "Defect",
+        "name_plural": "Defects",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "bug"
+        }
+    },
+    {
+        "id": 1008,
+        "name": "Studio Task",
+        "name_plural": "Studio Tasks",
+        "description": "Place holder for Design Team - will be elaborated once we have the requirements",
+        "avatar": {
+            "source": "fas",
+            "value": "user-alt"
+        }
+    },
+    {
+        "id": 1009,
+        "name": "Test Case",
+        "name_plural": "Test Cases",
+        "description": null,
+        "avatar": {
+            "source": "fas",
+            "value": "rectangle-ad"
+        }
+    }
+]
