@@ -2,8 +2,7 @@ const axios = require('axios');
 const { getCustomFieldId } = require('../config/config-helper');
 
 class ClickUpService {
-    apiKey = 'pk_61405013_J7LUL9D1W7RR3WH7HURV3JMWFIWMO2T0'
-    // apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
+    apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
 
     constructor() {
         this.clickupBaseUrl = 'https://api.clickup.com/api/v2';
