@@ -1,8 +1,8 @@
 const axios = require('axios');
 
 module.exports = class GitHubService {
-    // apiKey = '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'
-    apiKey = JSON.parse(process.env.GITHUB_API_KEY || "{}").GITHUB_API_KEY
+    apiKey = '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'
+    // apiKey = JSON.parse(process.env.GITHUB_API_KEY || "{}").GITHUB_API_KEY
 
     constructor() {
         this.githubBaseUrl = 'https://api.github.com';
