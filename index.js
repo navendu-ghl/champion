@@ -29,16 +29,16 @@ const automationConfig = require('./config');
 //     // res.send(`Hello ${req.query.name || req.body.name || 'World'}!`);
 // })();
 
-const express = require('express');
-const app = express();
+// const express = require('express');
+// const app = express();
 
-const PORT = process.env.PORT || 8080;
+// const PORT = process.env.PORT || 8080;
 
-app.get('/run', handleRun);
+// app.get('/run', handleRun);
 
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Listening on port ${PORT}`);
+// });
 
 
 async function handleRun(req, res) {
@@ -73,3 +73,5 @@ async function handleRun(req, res) {
     // res.send(`Hello ${req.query.name || req.body.name || 'World'}!`);
 
 }
+
+functions.http('run', handleRun);
