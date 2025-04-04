@@ -29,14 +29,26 @@ const automationConfig = require('./config');
 //     // res.send(`Hello ${req.query.name || req.body.name || 'World'}!`);
 // })();
 
-functions.http('run', async (req, res) => {
+const express = require('express');
+const app = express();
+
+const PORT = process.env.PORT || 8080;
+
+app.get('/run', handleRun);
+
+app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+});
+
+
+async function handleRun(req, res) {
     const taskId = req.query.taskId;
     const action = req.query.action;
     if (!taskId || !action) {
         res.status(400).send("Clickup taskId and action are required.");
     }
 
-    const _automationConfig = {...automationConfig }
+    const _automationConfig = { ...automationConfig }
     _automationConfig.forEach(automation => {
         if (automation.id === action) {
             automation.enabled = true;
@@ -60,4 +72,4 @@ functions.http('run', async (req, res) => {
 
     // res.send(`Hello ${req.query.name || req.body.name || 'World'}!`);
 
-});
+}
