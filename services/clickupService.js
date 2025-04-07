@@ -1,12 +1,11 @@
 const axios = require('axios');
-const teams = require('../data/teams.json');
+const { getCustomFieldId } = require('../config/config-helper');
 
 class ClickUpService {
     apiKey = 'pk_61405013_J7LUL9D1W7RR3WH7HURV3JMWFIWMO2T0'
     // apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
 
     constructor() {
-        this.CLICKUP_FOLDER_ID = teams["automation-calendars"].folderId;
         this.clickupBaseUrl = 'https://api.clickup.com/api/v2';
         this.headers = { Authorization: this.apiKey };
     }
@@ -175,30 +174,26 @@ class ClickUpService {
         return response;
     }
 
-    async getCustomItems() {
-        const url = `${this.clickupBaseUrl}/team/8631005/custom_item`;
-        const data = await this.makeClickUpRequest(url);
-        return data;
-    }
+    getCustomFields(task, customFieldsToCopy = []) {
+        const _customFieldIdsToCopy = customFieldsToCopy.map(field => getCustomFieldId(field));
+        const result = [];
+        task.custom_fields.forEach(customField => {
+            if (_customFieldIdsToCopy.includes(customField.id)) {
+                if (customField.type === 'drop_down') {
+                    const options = customField.type_config.options;
+                    const value = options.find(option => option.orderindex === customField.value)?.id;
+                    if (value) {
+                        result.push({ key: customField.id, value });
+                    }
+                } else {
+                    result.push({ key: customField.id, value: customField.value });
+                }
+            }
 
-    async createTask(listId, data) {
-        const url = `${this.clickupBaseUrl}/list/${listId}/task`;
-        const response = await this.makeClickUpRequest(url, 'POST', data);
-        return response;
-    }
+        });
 
-    async fetchLists() {
-        const url = `${this.clickupBaseUrl}/folder/${this.CLICKUP_FOLDER_ID}/list`;
-        const response = await this.makeClickUpRequest(url);
-        return response.lists;
+        return result;
     }
-
-    async addTaskToList(taskId, listId) {
-        const url = `${this.clickupBaseUrl}/list/${listId}/task/${taskId}`;
-        const response = await this.makeClickUpRequest(url, 'POST');
-        return response;
-    }
-
 }
 
 module.exports = ClickUpService;
