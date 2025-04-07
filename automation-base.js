@@ -83,8 +83,6 @@ class AutomationBase {
                         // deep compare two objects
                         return jsonValue.some(item => this.deepCompare(item, value));
                     }
-                case '$in':
-                    return value.includes(jsonValue);
                 default:
                     throw new Error(`Invalid operator: ${operator}`);
             }
