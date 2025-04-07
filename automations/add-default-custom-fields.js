@@ -11,10 +11,10 @@ class AddCustomFieldsAutomation extends AutomationBase {
     async run(task) {
         try {
             // Get the update_custom_fields action from the then clause
-            const customFieldsAction = this.config.then.action === 'add_custom_fields'
+            const customFieldsAction = this.config.then.action === 'add_default_custom_fields'
 
             if (!customFieldsAction) {
-                throw new Error('No add_custom_fields action found in config');
+                throw new Error('No add_default_custom_fields action found in config');
             }
 
             // Transform the fields object into the format expected by ClickUp
