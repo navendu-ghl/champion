@@ -51,6 +51,40 @@ class ClickUpHelper {
 
         return result;
     }
+
+    getCurrentAndNextSprint(sprints) {
+        const now = Date.now();
+
+        // Convert start and due dates to numbers and sort the sprints by start_date
+        const sortedSprints = sprints
+            .map(sprint => ({
+                ...sprint,
+                start: Number(sprint.start_date),
+                end: Number(sprint.due_date)
+            }))
+            .sort((a, b) => a.start - b.start);
+
+        let current = null;
+        let next = null;
+
+        for (let i = 0; i < sortedSprints.length; i++) {
+            const sprint = sortedSprints[i];
+            if (now >= sprint.start && now <= sprint.end) {
+                current = sprint;
+                next = sortedSprints[i + 1] || null;
+                break;
+            }
+
+            // If now is before the first sprint
+            if (now < sprint.start) {
+                next = sprint;
+                break;
+            }
+        }
+
+        return { current, next };
+    }
+
 }
 
 module.exports = ClickUpHelper;

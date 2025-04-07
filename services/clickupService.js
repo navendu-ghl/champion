@@ -1,10 +1,12 @@
 const axios = require('axios');
+const teams = require('../data/teams.json');
 
 class ClickUpService {
     apiKey = 'pk_61405013_J7LUL9D1W7RR3WH7HURV3JMWFIWMO2T0'
     // apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
 
     constructor() {
+        this.CLICKUP_FOLDER_ID = teams["automation-calendars"].folderId;
         this.clickupBaseUrl = 'https://api.clickup.com/api/v2';
         this.headers = { Authorization: this.apiKey };
     }
@@ -184,6 +186,19 @@ class ClickUpService {
         const response = await this.makeClickUpRequest(url, 'POST', data);
         return response;
     }
+
+    async fetchLists() {
+        const url = `${this.clickupBaseUrl}/folder/${this.CLICKUP_FOLDER_ID}/list`;
+        const response = await this.makeClickUpRequest(url);
+        return response.lists;
+    }
+
+    async addTaskToList(taskId, listId) {
+        const url = `${this.clickupBaseUrl}/list/${listId}/task/${taskId}`;
+        const response = await this.makeClickUpRequest(url, 'POST');
+        return response;
+    }
+
 }
 
 module.exports = ClickUpService;
