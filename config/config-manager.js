@@ -93,6 +93,23 @@ class ConfigManager {
                         subTaskCategories: ['DEV', 'QA', 'Product Review']
                     }
                 }
+            },
+            handleSpilloverTask: {
+                id: "handle-spillover-task",
+                name: "Handle Spillover Task",
+                automationFile: "handle-spillover-task",
+                enabled: false,
+                when: {
+                    $and: [
+                        { "custom_item_id": { $eq: this.configHelper.getCustomItemId("User Story") } },
+                        { "creator.email": { $in: teams["automation-calendars"].members } },
+                        { "tags[].name": { $includes: "spillover" } }
+                    ]
+                },
+                then: {
+                    action: "handle_spillover_task",
+                    data: {}
+                }
             }
         };
     }
