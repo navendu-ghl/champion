@@ -4,8 +4,10 @@ const AutomationManager = require('./automation-manager');
 const ConfigManager = require('./config/config-manager');
 
 async function handleRun(req, res) {
-    const taskId = '86cyfy91q';
-    const action = 'create-sub-tasks'
+    // const taskId = '86cyfy91q';
+    // const action = 'create-sub-tasks'
+    const taskId = req.query.taskId;
+    const action = req.query.action;
     if (!taskId || !action) {
         res.status(400).send("Clickup taskId and action are required.");
     }
@@ -30,6 +32,6 @@ async function handleRun(req, res) {
     }
 }
 
-// functions.http('run', handleRun);
+functions.http('run', handleRun);
 
-handleRun()
+// handleRun()
