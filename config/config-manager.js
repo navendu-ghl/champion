@@ -1,4 +1,4 @@
-const ConfigHelper = require('../clickup-helper');
+const ClickUpHelper = require('../clickup-helper');
 const teams = require('../data/teams.json');
 
 class ConfigManager {
@@ -7,13 +7,13 @@ class ConfigManager {
         this.customFields = task.custom_fields;
 
         // maintain order
-        this.configHelper = new ConfigHelper(this.customFields);
+        this.clickUpHelper = new ClickUpHelper();
         this.config = this.compileConfig();
         // maintain order
     }
 
     compileConfig() {
-        if (!this.configHelper) throw new Error('ConfigHelper not found');
+        if (!this.clickUpHelper) throw new Error('ClickUpHelper not found');
 
         return {
             addDefaultCustomFields: {
@@ -31,16 +31,16 @@ class ConfigManager {
                     data: {
                         customFields: [
                             {
-                                key: this.configHelper.getCustomFieldId("📚 Module"),
-                                value: this.configHelper.getCustomFieldOptionId("📚 Module", "Automation")
+                                key: this.clickUpHelper.getCustomFieldId(this.customFields, "📚 Module"),
+                                value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "📚 Module", "Automation")
                             },
                             {
-                                key: this.configHelper.getCustomFieldId("📚 Sub-Module"),
-                                value: this.configHelper.getCustomFieldOptionId("📚 Sub-Module", "Auto-Calendar")
+                                key: this.clickUpHelper.getCustomFieldId(this.customFields, "📚 Sub-Module"),
+                                value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "📚 Sub-Module", "Auto-Calendar")
                             },
                             {
-                                key: this.configHelper.getCustomFieldId("⏳ Delivery Quarter"),
-                                value: this.configHelper.getCustomFieldOptionId("⏳ Delivery Quarter", this.configHelper.getCurrentQuarter())
+                                key: this.clickUpHelper.getCustomFieldId(this.customFields, "⏳ Delivery Quarter"),
+                                value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "⏳ Delivery Quarter", this.clickUpHelper.getCurrentQuarter(this.customFields))
                             }
                         ]
                     }
@@ -83,7 +83,7 @@ class ConfigManager {
                 when: {
                     $and: [
                         { "parent": { $exists: true } },
-                        { "custom_item_id": { $eq: this.configHelper.getCustomItemId("User Story") } },
+                        { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
                         { "creator.email": { $in: teams["automation-calendars"].members } }
                     ]
                 },
@@ -101,13 +101,13 @@ class ConfigManager {
                 enabled: false,
                 when: {
                     $and: [
-                        { "custom_item_id": { $eq: this.configHelper.getCustomItemId("User Story") } },
+                        { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
                         { "creator.email": { $in: teams["automation-calendars"].members } },
                         { "tags[].name": { $includes: "spillover" } }
                     ]
                 },
                 then: {
-                    action: "handle_spillover_task",
+                    action: "handle-spillover-task",
                     data: {}
                 }
             }

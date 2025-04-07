@@ -1,22 +1,21 @@
 const customItemsData = require('./data/custom-items.json');
 
 class ClickUpHelper {
-    constructor(customFieldsData) {
-        this.customFieldsData = customFieldsData;
+    constructor() {
         this.customItemsData = customItemsData;
     }
 
-    getCustomFieldId(fieldName) {
-        return this.customFieldsData.find(field => field.name === fieldName)?.id;
+    getCustomFieldId(customFieldsData, fieldName) {
+        return customFieldsData.find(field => field.name === fieldName)?.id;
     }
 
-    getCustomFieldOptionId(fieldName, optionName) {
-        const options = this.customFieldsData.find(field => field.name === fieldName)?.type_config?.options || [];
+    getCustomFieldOptionId(customFieldsData, fieldName, optionName) {
+        const options = customFieldsData.find(field => field.name === fieldName)?.type_config?.options || [];
         return options.find(option => option.name === optionName)?.id;
     }
 
-    getCurrentQuarter() {
-        const quarterOptions = this.customFieldsData.find(field => field.name === "⏳ Delivery Quarter")?.type_config?.options.map(option => option.name);
+    getCurrentQuarter(customFieldsData) {
+        const quarterOptions = customFieldsData.find(field => field.name === "⏳ Delivery Quarter")?.type_config?.options.map(option => option.name);
 
         // find quarter from quarterOptions based on current date
         const currentDate = new Date();
@@ -32,7 +31,7 @@ class ClickUpHelper {
     }
 
     copyCustomFields(task, customFieldsToCopy = []) {
-        const _customFieldIdsToCopy = customFieldsToCopy.map(field => this.getCustomFieldId(field));
+        const _customFieldIdsToCopy = customFieldsToCopy.map(field => this.getCustomFieldId(task.custom_fields, field));
         const result = [];
         task.custom_fields.forEach(customField => {
             if (_customFieldIdsToCopy.includes(customField.id)) {
@@ -84,7 +83,6 @@ class ClickUpHelper {
 
         return { current, next };
     }
-
 }
 
 module.exports = ClickUpHelper;
