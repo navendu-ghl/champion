@@ -18,7 +18,7 @@ class AddCustomFieldsAutomation extends AutomationBase {
             }
 
             // Transform the fields object into the format expected by ClickUp
-            const customFields = customFieldsAction.data.customFields
+            const customFields = this.config.then.data.customFields
 
             await Promise.all(customFields.map(async (customField) => {
                 return this.clickupService.setCustomFields(task.id, customField.key, customField.value);
