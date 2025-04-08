@@ -24,7 +24,7 @@ async function handleRun(req, res) {
         res.status(400).send("Clickup taskId and action are required.");
     }
 
-
+    let results = [];
     try {
         const clickupService = new ClickUpService();
 
@@ -34,7 +34,7 @@ async function handleRun(req, res) {
         configManager.enableAutomation(action);
         const automationManager = new AutomationManager(configManager.getConfig());
 
-        const { results, errors } = await automationManager.runAutomations(task);
+        let { results, errors } = await automationManager.runAutomations(task);
         console.log('Automation results:', results);
         if (errors.length > 0) {
             console.error('Automation errors:', errors);
