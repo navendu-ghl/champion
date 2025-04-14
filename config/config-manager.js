@@ -17,7 +17,7 @@ class ConfigManager {
 
         return {
             addDefaultCustomFields: {
-                id: "add-default-custom-fields",
+                id: "add_default_custom_fields",
                 name: "Add Default Custom Fields for Specific Creator",
                 automationFile: "add-default-custom-fields",
                 enabled: false,
@@ -76,7 +76,7 @@ class ConfigManager {
                 }
             },
             createSubTasks: {
-                id: "create-sub-tasks",
+                id: "create_sub_tasks",
                 name: "Create Sub Tasks",
                 automationFile: "create-sub-tasks",
                 enabled: false,
@@ -94,7 +94,7 @@ class ConfigManager {
                 }
             },
             handleSpilloverTask: {
-                id: "handle-spillover-task",
+                id: "handle_spillover_task",
                 name: "Handle Spillover Task",
                 automationFile: "handle-spillover-task",
                 enabled: false,
@@ -106,7 +106,7 @@ class ConfigManager {
                     ]
                 },
                 then: {
-                    action: "handle-spillover-task",
+                    action: "handle_spillover_task",
                     data: {}
                 }
             }
