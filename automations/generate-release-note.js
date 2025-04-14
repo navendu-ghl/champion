@@ -14,7 +14,7 @@ class GenerateReleaseNoteAutomation extends AutomationBase {
 
   async run(task) {
     try {
-      const generateReleaseNoteAction = this.config.then.action === "generate-release-note";
+      const generateReleaseNoteAction = this.config.id === "generate-release-note";
 
       if (!generateReleaseNoteAction) {
         throw new Error("No generate-release-note action found in config");

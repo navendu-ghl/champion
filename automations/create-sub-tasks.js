@@ -11,7 +11,7 @@ class CreateSubTasksAutomation extends AutomationBase {
 
   async run(task) {
     try {
-      const createSubTasksAction = this.config.then.action === "create-sub-tasks";
+      const createSubTasksAction = this.config.id === "create-sub-tasks";
 
       if (!createSubTasksAction) {
         throw new Error("No create-sub-tasks action found in config");
