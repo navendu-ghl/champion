@@ -14,10 +14,10 @@ class GenerateReleaseNoteAutomation extends AutomationBase {
 
   async run(task) {
     try {
-      const generateReleaseNoteAction = this.config.id === "generate-release-note";
+      const generateReleaseNoteAction = this.config.id === "generate_release_note";
 
       if (!generateReleaseNoteAction) {
-        throw new Error("No generate-release-note action found in config");
+        throw new Error("No generate_release_note action found in config");
       }
 
       const [taskDetailsString, cuComments] = await Promise.all([
