@@ -14,6 +14,7 @@ class ClickUpHelper {
         return options.find(option => option.name === optionName)?.id;
     }
 
+    // Verify before using this function
     getCurrentQuarter(customFieldsData) {
         const quarterOptions = customFieldsData.find(field => field.name === "⏳ Delivery Quarter")?.type_config?.options.map(option => option.name);
 

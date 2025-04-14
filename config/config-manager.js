@@ -37,11 +37,11 @@ class ConfigManager {
                             {
                                 key: this.clickUpHelper.getCustomFieldId(this.customFields, "📚 Sub-Module"),
                                 value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "📚 Sub-Module", "Auto-Calendar")
-                            },
-                            {
-                                key: this.clickUpHelper.getCustomFieldId(this.customFields, "⏳ Delivery Quarter"),
-                                value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "⏳ Delivery Quarter", this.clickUpHelper.getCurrentQuarter(this.customFields))
                             }
+                            // {
+                            //     key: this.clickUpHelper.getCustomFieldId(this.customFields, "⏳ Delivery Quarter"),
+                            //     value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "⏳ Delivery Quarter", this.clickUpHelper.getCurrentQuarter(this.customFields))
+                            // }
                         ]
                     }
                 }
@@ -82,7 +82,6 @@ class ConfigManager {
                 enabled: false,
                 when: {
                     $and: [
-                        { "parent": { $exists: true } },
                         { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
                         { "creator.email": { $in: teams["automation-calendars"].members } }
                     ]
