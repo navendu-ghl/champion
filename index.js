@@ -22,6 +22,7 @@ async function handleRun(req, res) {
     const action = req.query?.action;
     if (!taskId || !action) {
         res.status(400).send("Clickup taskId and action are required.");
+        return;
     }
 
     let results = [];
@@ -40,7 +41,7 @@ async function handleRun(req, res) {
             console.error('Automation errors:', errors);
         }
     } catch (error) {
-        console.error('Error running automations:', error);
+        console.error('Error running automations:', error.message);
     }
 
     res.send('Automation results:', results);
