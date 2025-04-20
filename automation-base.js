@@ -44,8 +44,15 @@ class AutomationBase {
     handleNestedConditions(json, key, conditions) {
         return Object.entries(conditions).every(([operator, value]) => {
             let jsonValue;
-            // handle the case where the key is an array
-            if (key.includes('[].')) {
+
+            // TODO: enhance this later
+            // "custom_fields->710f1ecb-36ca-4beb-9c84-476a839275be.value"
+            const regex = /^(.+)\->(.+)\.(.+)$/;
+            const _match = key.match(regex);
+            if (_match) {
+                jsonValue = json[_match[1]].find(x => x.id === _match[2])[_match[3]];
+            } else if (key.includes('[].')) {
+                // handle the case where the key is an array
                 const [_key, _subKey] = key.split('[].');
                 jsonValue = json[_key].map(item => item[_subKey]);
             } else {
@@ -66,6 +73,8 @@ class AutomationBase {
                 }
                 return typeof jsonValue === value.toLowerCase();
             }
+
+            console.log({ operator, jsonValue, value });
 
             switch (operator) {
                 case '$eq': return jsonValue === value;

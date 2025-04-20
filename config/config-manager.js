@@ -46,6 +46,33 @@ class ConfigManager {
                     }
                 }
             },
+            addDefaultCustomFieldsToSupportTickets: {
+                id: "add-default-custom-fields-to-support-tickets",
+                name: "Add Default Custom Fields to Support Tickets",
+                automationFile: "add-default-custom-fields",
+                enabled: false,
+                when: {
+                    $and: [
+                        { "custom_fields[].id": { $includes: "710f1ecb-36ca-4beb-9c84-476a839275be" } }, // Module
+                        { "custom_fields->710f1ecb-36ca-4beb-9c84-476a839275be.value": { $includes: "2ee3cd2d-0596-4205-93c1-8b5a32d61122" } } // Calendars
+                    ]
+                },
+                then: {
+                    action: "add_default_custom_fields_to_support_tickets",
+                    data: {
+                        customFields: [
+                            {
+                                key: this.clickUpHelper.getCustomFieldId(this.customFields, "📚 Module"),
+                                value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "📚 Module", "Automation")
+                            },
+                            {
+                                key: this.clickUpHelper.getCustomFieldId(this.customFields, "📚 Sub-Module"),
+                                value: this.clickUpHelper.getCustomFieldOptionId(this.customFields, "📚 Sub-Module", "Auto-Calendar")
+                            }
+                        ]
+                    }
+                }
+            },
             generateReleaseNote: {
                 id: "generate-release-note",
                 name: "Generate Release Note",
