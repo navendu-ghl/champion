@@ -1,3 +1,5 @@
+const { sendLog } = require('./es-helper');
+
 class AutomationManager {
     constructor(config) {
         this.config = config;
@@ -30,10 +32,23 @@ class AutomationManager {
                 } else {
                     console.log(`Automation ${automation.name} is valid`);
                     await automation.run(task);
+                    sendLog({
+                        automation: automation.config.id,
+                        manualActionCount: automation.config.metadata.manualActionCount || 0,
+                        taskId: task.id,
+                        status: 'success'
+                    });
                     results.push({ name: automation.name, status: 'success' });
                 }
             } catch (error) {
                 console.error(`Error running automation ${automation.name}:`, error);
+                sendLog({
+                    automation: automation.config.id,
+                    manualActionCount: automation.config.metadata.manualActionCount || 0,
+                    taskId: task.id,
+                    status: 'error',
+                    error: error.message
+                });
                 errors.push({ name: automation.name, error: error.message });
             }
         }

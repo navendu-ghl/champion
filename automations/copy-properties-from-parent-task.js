@@ -20,7 +20,7 @@ class CopyPropertiesFromParentTaskAutomation extends AutomationBase {
       const parentTask = await this.clickupService.getTaskDetailsV2(task.parent);
 
       // copy custom fields from parent task
-      const customFieldsToCopy = ['📚 Module', '📚 Sub-Module', '📖 Category'];
+      const customFieldsToCopy = this.config.metadata.customFieldsToCopy;
       const clickUpHelper = new ClickUpHelper(task.custom_fields);
       const customFields = clickUpHelper.copyCustomFields(parentTask, customFieldsToCopy);
 

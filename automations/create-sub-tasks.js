@@ -18,7 +18,7 @@ class CreateSubTasksAutomation extends AutomationBase {
       }
 
       const subTaskCategories = this.config.then.data.subTaskCategories;
-      const customFieldsToCopy = ["📚 Module", "📚 Sub-Module", "📖 Category"];
+      const customFieldsToCopy = this.config.metadata.customFieldsToCopy;
       const clickUpHelper = new ClickUpHelper(task.custom_fields);
       const customFields = clickUpHelper.copyCustomFields(task, customFieldsToCopy);
 

@@ -21,6 +21,9 @@ class ConfigManager {
                 name: "Add Default Custom Fields for Specific Creator",
                 automationFile: "add-default-custom-fields",
                 enabled: false,
+                metadata: {
+                    manualActionCount: 2
+                },
                 when: {
                     $or: [
                         { "creator.email": { $in: teams["automation-calendars"].members } }
@@ -51,6 +54,9 @@ class ConfigManager {
                 name: "Add Default Custom Fields to Support Tickets",
                 automationFile: "add-default-custom-fields",
                 enabled: false,
+                metadata: {
+                    manualActionCount: 2
+                },
                 when: {
                     $and: [
                         { "custom_fields[].id": { $includes: "710f1ecb-36ca-4beb-9c84-476a839275be" } }, // Module
@@ -78,6 +84,9 @@ class ConfigManager {
                 name: "Generate Release Note",
                 automationFile: "generate-release-note",
                 enabled: false,
+                metadata: {
+                    manualActionCount: 1
+                },
                 when: {
                     $or: [{ "tags[].name": { $includes: "calendars-feature-released" } }]
                 },
@@ -91,6 +100,9 @@ class ConfigManager {
                 name: "Copy Properties From Parent Task",
                 automationFile: "copy-properties-from-parent-task",
                 enabled: false,
+                metadata: {
+                    manualActionCount: 3
+                },
                 when: {
                     $and: [
                         { "parent": { $exists: true } },
@@ -99,7 +111,9 @@ class ConfigManager {
                 },
                 then: {
                     action: "copy_properties_from_parent_task",
-                    data: {}
+                    data: {
+                        customFieldsToCopy: ['📚 Module', '📚 Sub-Module', '📖 Category']
+                    }
                 }
             },
             createSubTasks: {
@@ -107,6 +121,9 @@ class ConfigManager {
                 name: "Create Sub Tasks",
                 automationFile: "create-sub-tasks",
                 enabled: false,
+                metadata: {
+                    manualActionCount: 6
+                },
                 when: {
                     $and: [
                         { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
@@ -116,7 +133,8 @@ class ConfigManager {
                 then: {
                     action: "create_sub_tasks",
                     data: {
-                        subTaskCategories: ['DEV', 'QA', 'Product Review']
+                        subTaskCategories: ['DEV', 'QA'],
+                        customFieldsToCopy: ['📚 Module', '📚 Sub-Module', '📖 Category']
                     }
                 }
             },
@@ -125,6 +143,9 @@ class ConfigManager {
                 name: "Handle Spillover Task",
                 automationFile: "handle-spillover-task",
                 enabled: false,
+                metadata: {
+                    manualActionCount: 5
+                },
                 when: {
                     $and: [
                         { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
