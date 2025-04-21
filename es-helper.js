@@ -4,22 +4,20 @@ const ELASTIC_URL = 'https://es-app-user-highlevel-staging-private-user:WVgALvjX
 const INDEX_NAME = 'calendars_clickup_automation_logs';
 
 async function sendLog(data) {
+    const calendarEventESClient = new elasticsearch.Client({
+        hosts: ELASTIC_URL
+      })
     console.log("Sending log to Elasticsearch...", data);
     const index = `${INDEX_NAME}-${new Date().toISOString().split('T')[0]}`;
 
     try {
-        await axios.post(
-            `${ELASTIC_URL}/${index}/_doc`,
-            {
+        calendarEventESClient.index({
+            index,
+            body: {
                 timestamp: new Date(),
                 ...data
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
             }
-        );
+        })
     } catch (error) {
         console.error('Error sending log to Elasticsearch:', JSON.stringify(error));
     }
