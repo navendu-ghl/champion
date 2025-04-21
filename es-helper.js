@@ -1,12 +1,16 @@
 const elasticsearch = require('elasticsearch');
 
-const ELASTIC_URL = 'https://es-app-user-highlevel-staging-private-user:WVgALvjX7Y9!5Hxyck@vpc-highlevel-staging-private-5wwmxidjayhf6poeu4hzdf45sq.us-east-1.es.amazonaws.com';
+const ELASTICSEARCH_DATA_WAREHOUSE_URL = (process.env.ELASTICSEARCH_DB_CREDENTIALS || {}).ELASTICSEARCH_DATA_WAREHOUSE_URL;
 const INDEX_NAME = 'calendars_clickup_automation_logs';
 
 async function sendLog(data) {
-    return
+    if (!ELASTICSEARCH_DATA_WAREHOUSE_URL) {
+        console.error('ELASTIC_URL is not set');
+        return;
+    }
+
     const calendarEventESClient = new elasticsearch.Client({
-        hosts: ELASTIC_URL
+        hosts: ELASTICSEARCH_DATA_WAREHOUSE_URL
       })
     console.log("Sending log to Elasticsearch...", data);
     const index = `${INDEX_NAME}-${new Date().toISOString().split('T')[0]}`;
