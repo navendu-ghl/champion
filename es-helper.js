@@ -21,7 +21,7 @@ async function sendLog(data) {
             }
         );
     } catch (error) {
-        console.error('Error sending log to Elasticsearch:', error.response?.data || error.message);
+        console.error('Error sending log to Elasticsearch:', JSON.stringify(error));
     }
 }
 
