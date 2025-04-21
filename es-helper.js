@@ -4,6 +4,7 @@ const ELASTIC_URL = 'https://es-app-user-highlevel-staging-private-user:WVgALvjX
 const INDEX_NAME = 'calendars_clickup_automation_logs';
 
 async function sendLog(data) {
+    return
     const calendarEventESClient = new elasticsearch.Client({
         hosts: ELASTIC_URL
       })
