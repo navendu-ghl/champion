@@ -1,9 +1,10 @@
 const elasticsearch = require('elasticsearch');
 
-const ELASTICSEARCH_DATA_WAREHOUSE_URL = (process.env.ELASTICSEARCH_DB_CREDENTIALS || {}).ELASTICSEARCH_DATA_WAREHOUSE_URL;
+const ELASTICSEARCH_DATA_WAREHOUSE_URL = JSON.parse(process.env.ELASTICSEARCH_DB_CREDENTIALS || '{}').ELASTICSEARCH_DATA_WAREHOUSE_URL;
 const INDEX_NAME = 'calendars_clickup_automation_logs';
 
 async function sendLog(data) {
+    console.log({ ELASTICSEARCH_DATA_WAREHOUSE_URL });
     if (!ELASTICSEARCH_DATA_WAREHOUSE_URL) {
         console.error('ELASTIC_URL is not set');
         return;
