@@ -1,6 +1,5 @@
 module.exports = class OpenAIService {
-    apiKey = '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'
-    // apiKey = JSON.parse(process.env.OPENAI_API_KEY || "{}").OPENAI_API_KEY
+    apiKey = JSON.parse(process.env.OPENAI_API_KEY || "{}").OPENAI_API_KEY
 
     constructor() {
         const OpenAI = require('openai');

@@ -14,10 +14,10 @@ class GenerateReleaseNoteAutomation extends AutomationBase {
 
   async run(task) {
     try {
-      const generateReleaseNoteAction = this.config.id === "generate-release-note";
+      const isCorrectAutomation = this.config.automationFile === "generate-release-note";
 
-      if (!generateReleaseNoteAction) {
-        throw new Error("No generate-release-note action found in config");
+      if (!isCorrectAutomation) {
+        throw new Error("Not configured to run generate-release-note");
       }
 
       const [taskDetailsString, cuComments] = await Promise.all([
@@ -29,7 +29,7 @@ class GenerateReleaseNoteAutomation extends AutomationBase {
       const prDetails = await Promise.all(prLinks.map((link) => this.githubService.getPRDetails(link)));
 
       const releaseNote = await this.openAIService.generateReleaseNote(taskDetailsString, prDetails);
-      const response = await this.clickupService.postTaskComment(task.id, releaseNote);
+      await this.clickupService.postTaskComment(task.id, releaseNote);
 
       console.log("Release note generated successfully");
     } catch (error) {

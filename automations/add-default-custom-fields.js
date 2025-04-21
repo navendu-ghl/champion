@@ -11,10 +11,10 @@ class AddCustomFieldsAutomation extends AutomationBase {
   async run(task) {
     try {
       // Get the update_custom_fields action from the then clause
-      const customFieldsAction = this.config.automationFile === "add-default-custom-fields";
+      const isCorrectAutomation = this.config.automationFile === "add-default-custom-fields";
 
-      if (!customFieldsAction) {
-        throw new Error("No add-default-custom-fields action found in config");
+      if (!isCorrectAutomation) {
+        throw new Error("Not configured to run add-default-custom-fields");
       }
 
       // Transform the fields object into the format expected by ClickUp

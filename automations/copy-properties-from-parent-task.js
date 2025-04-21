@@ -11,10 +11,10 @@ class CopyPropertiesFromParentTaskAutomation extends AutomationBase {
 
   async run(task) {
     try {
-      const copyPropertiesFromParentTaskAction = this.config.id === 'copy-properties-from-parent-task';
+      const isCorrectAutomation = this.config.automationFile === 'copy-properties-from-parent-task';
 
-      if (!copyPropertiesFromParentTaskAction) {
-        throw new Error('No copy-properties-from-parent-task action found in config');
+      if (!isCorrectAutomation) {
+        throw new Error('Not configured to run copy-properties-from-parent-task');
       }
 
       const parentTask = await this.clickupService.getTaskDetailsV2(task.parent);

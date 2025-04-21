@@ -85,7 +85,7 @@ class ConfigManager {
                 automationFile: "generate-release-note",
                 enabled: false,
                 metadata: {
-                    manualActionCount: 1
+                    manualActionCount: 0
                 },
                 when: {
                     $or: [{ "tags[].name": { $includes: "calendars-feature-released" } }]
