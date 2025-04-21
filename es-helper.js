@@ -1,4 +1,4 @@
-const axios = require('axios');
+const elasticsearch = require('elasticsearch');
 
 const ELASTIC_URL = 'https://es-app-user-highlevel-staging-private-user:WVgALvjX7Y9!5Hxyck@vpc-highlevel-staging-private-5wwmxidjayhf6poeu4hzdf45sq.us-east-1.es.amazonaws.com';
 const INDEX_NAME = 'calendars_clickup_automation_logs';
