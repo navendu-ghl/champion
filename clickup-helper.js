@@ -14,6 +14,11 @@ class ClickUpHelper {
         return options.find(option => option.name === optionName)?.id;
     }
 
+    getCustomFieldOptionValue(customFieldsData, fieldName, ValueIdx) {
+        const options = customFieldsData.find(field => field.name === fieldName)?.type_config?.options || [];
+        return options.find(option => option.orderindex === ValueIdx)?.name;
+    }
+
     // Verify before using this function
     getCurrentQuarter(customFieldsData) {
         const quarterOptions = customFieldsData.find(field => field.name === "⏳ Delivery Quarter")?.type_config?.options.map(option => option.name);
