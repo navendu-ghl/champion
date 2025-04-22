@@ -31,13 +31,20 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
       const { current, previous } = await this.clickupService.fetchCurrentAndPreviousSprint();
       const sprintList = phase === 0 ? previous : current;
 
-      const releasedItems = await this.clickupService.fetchReleasedItems({ listId: sprintList.id, startDate, endDate });
+      const tasks = await this.clickupService.fetchTasksByListId(sprintList.id);
 
-      const summary = this.clickupService.summarizeTasksForReleaseDigest(releasedItems);
+      const summary = this.clickupService.summarizeTasksForReleaseDigest({ tasks, startDate, endDate });
     //   console.log({ summary: JSON.stringify(summary, null, 2) })
-      const slackService = new SlackService('some-token');
-      const messages = slackService.formatReleaseDigestMessage({ summary, startDate, endDate });
-      console.log({ messages: JSON.stringify(messages, null, 2) })
+      const slackService = new SlackService();
+      const messages = slackService.formatReleaseDigestMessages({ summary, startDate, endDate });
+      // console.log({ messages: JSON.stringify(messages[4], null, 2) })
+      const response = await slackService.postMessage(messages[0]);
+      console.log({response})
+      if (response.ok && response.ts) {
+          for (let i = 1; i < messages.length; i++) {
+              await slackService.postMessage(messages[i], response.ts);
+          }
+      }
 
       console.log("Release digest posted successfully");
     } catch (error) {

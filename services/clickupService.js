@@ -324,22 +324,6 @@ class ClickUpService {
     }
   }
 
-  async fetchReleasedItems({ listId, startDate, endDate }) {
-    try {
-      const tasks = await this.fetchTasksByListId(listId);
-      // check if the status is closedStatuses and if the date_closed or date_done is between startDate and endDate
-      const releasedItems = tasks.filter((task) => {
-        const status = task.status?.status;
-        const closedDate = task.date_closed || task.date_done;
-        return this.closedStatuses.includes(status) && (closedDate >= startDate && closedDate <= endDate);
-      });
-      return releasedItems;
-    } catch (error) {
-      console.error(`Error in fetchReleasedItems`);
-      throw error;
-    }
-  }
-
   getSprintPhase(referenceStartDate = '2025-01-29') {
     const today = new Date();
     const refStart = new Date(referenceStartDate);
@@ -351,8 +335,9 @@ class ClickUpService {
     const daysSinceStart = Math.floor((today - refStart) / (1000 * 60 * 60 * 24));
 
     // return the start and end date of the phase
-    const startDate = new Date(refStart.getTime() + daysSinceStart * 24 * 60 * 60 * 1000);
-    const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const endDate = new Date(refStart.getTime() + daysSinceStart * 24 * 60 * 60 * 1000);
+    const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    endDate.setHours(23, 59, 59, 999);
 
     // Sprint is 14 days, check if today is a multiple of 14 since start
     let phase = 2; // not a sprint check day
@@ -399,7 +384,7 @@ class ClickUpService {
     return { current, previous };
   }
 
-  summarizeTasksForReleaseDigest(tasks) {
+  summarizeTasksForReleaseDigest({ tasks, startDate, endDate }) {
     // store name, assignee and category
     const summary = {};
     const taskMap = {};
@@ -416,7 +401,29 @@ class ClickUpService {
     });
 
     tasks.forEach((task) => {
-      if (!task.parent || (task.parent && !taskMap[task.parent]?.id)) {
+      const _isTaskClosed = this.closedStatuses.includes(task.status?.status)
+      const _closedDate = new Date(parseInt(task.date_closed || task.date_done))
+      const _isTaskInTimeRange = _closedDate >= startDate && _closedDate <= endDate
+      const _isParentTask = !task.parent
+      const _isParentTaskPresentInList = task.parent && taskMap[task.parent]?.id
+      const _isParentTaskClosed = _isParentTaskPresentInList && this.closedStatuses.includes(taskMap[task.parent]?.status?.status)
+
+      // console.log(`\nname: ${task.name}, _isTaskClosed: ${_isTaskClosed}, startDate: ${startDate}, endDate: ${endDate}, _closedDate: ${_closedDate}, _isTaskInTimeRange: ${_isTaskInTimeRange}, _isParentTask: ${_isParentTask}, _isParentTaskPresentInList: ${_isParentTaskPresentInList}, _isParentTaskClosed: ${_isParentTaskClosed}`)
+
+      let _shouldProcessTask = false
+      if(_isTaskClosed && _isTaskInTimeRange && _isParentTask) {
+        // process parent task
+        _shouldProcessTask = true
+      } else if (_isTaskClosed && _isTaskInTimeRange && !_isParentTask && !_isParentTaskPresentInList) {
+        // process task if it is not a parent task and it's parent task is not in the list
+        _shouldProcessTask = true
+      } 
+      // else if (_isTaskClosed && _isTaskInTimeRange && !_isParentTask && _isParentTaskPresentInList && _isParentTaskClosed) {
+      //   // process task if it is not a parent task, it's parent task is in the list and it's parent task is closed
+      //   _shouldProcessTask = true
+      // }
+
+      if (_shouldProcessTask) {
         const name = task.name;
 
         const taskAssignee = task.assignees[0]?.username;

@@ -18,6 +18,7 @@ class SlackService {
     'Lavish Patni': 'U03U00BPMC5',
     'Ashish Ahuja': 'U05KASZT6P2',
     'Nikhil Kumar': 'U08G3EDNR4Y',
+    'Ankit Jain': 'U03UXFXFNHW'
   };
   TEAM_CALENDAR_ID = 'S03T400DNN5';
 
@@ -47,15 +48,20 @@ class SlackService {
       emoji: '🔒',
       title: 'Security',
     },
-    Other: {
+    'UI/UX': {
       order: 6,
+      emoji: '🎨',
+      title: 'UI/UX',
+    },
+    Other: {
+      order: 7,
       emoji: '📦',
       title: 'Other',
     },
   };
 
-  constructor(botToken) {
-    this.botToken = botToken;
+  constructor() {
+    this.botToken = JSON.parse(process.env.SLACK_API_KEY || "{}").SLACK_API_KEY;
     this.baseUrl = 'https://slack.com/api';
   }
 
@@ -152,8 +158,9 @@ class SlackService {
     return parentMessage;
   }
 
-  formatReleaseDigestMessage({ summary, startDate, endDate }) {
-    const message = {
+  formatReleaseDigestMessages({ summary, startDate, endDate }) {
+    const messages = [];
+    const parentMessage = {
       text: `📅 Weekly Release Digest`,
       blocks: [
         {
@@ -175,61 +182,75 @@ class SlackService {
         },
       ],
     };
+    messages.push(parentMessage);
     const sortedSummary = Object.entries(summary).sort((a, b) => this.taskCategoryMap[a[0]].order - this.taskCategoryMap[b[0]].order);
     sortedSummary.forEach(([category, data]) => {
       const tasks = data.tasks;
       // category title
-      message.blocks.push(
-        {
+      const message = {
+        text: `${this.taskCategoryMap[category].emoji} ${this.taskCategoryMap[category].title}`,
+        blocks: [
+          {
             type: 'divider',
-        },
-        {
+          },
+          {
             type: 'section',
             text: {
                 type: 'mrkdwn',
                 text: `*${this.taskCategoryMap[category].emoji} ${this.taskCategoryMap[category].title}*`,
             },
-        },
-      );
+          },
+        ],
+      };
+      
       // tasks
       tasks.forEach((task) => {
+        const _taskName = category === 'Other' ? `• ${task.name} - <${task.url}|Details>` : `• ${task.name}`
         message.blocks.push(
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `• ${task.name}`,
+              text: _taskName,
             },
           },
-          {
-            type: 'context',
-            elements: [
-              {
-                type: 'mrkdwn',
-                text: `Owner: ${task.assignees.map((assignee) => `<@${this.SLACK_MEMBER_IDS[assignee]}>`).join(', ')} | <${task.url}|Details>`,
-              },
-            ],
-          },
+          ...(category === 'Other' ? [] : [
+            {
+              type: 'context',
+              elements: [
+                {
+                  type: 'mrkdwn',
+                  text: `Owner: ${task.assignees.map((assignee) => `<@${this.SLACK_MEMBER_IDS[assignee]}>`).join(', ')} | <${task.url}|Details>`,
+                },
+              ],
+            }
+          ])
         );
       });
+      messages.push(message);
     });
 
     // footer
-    message.blocks.push(
-      {
-        type: 'divider',
-      },
-      {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: '🏁 Keep up the amazing work, team! 🚀',
-          },
-        ],
-      },
-    );
-    return message;
+    const footerMessage = {
+      text: '🏁 Keep up the amazing work, team! 🚀',
+      blocks: [
+        {
+          type: 'divider',
+        },
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: '🏁 Keep up the amazing work, team! 🚀',
+            },
+          ],
+        },
+      ],
+    };
+    messages.push(footerMessage);
+
+    return messages;
   }
 
   async postMessage(message, threadId = null) {
