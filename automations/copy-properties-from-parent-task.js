@@ -9,7 +9,7 @@ class CopyPropertiesFromParentTaskAutomation extends AutomationBase {
     this.clickupService = new ClickUpService();
   }
 
-  async run(task) {
+  async run(context) {
     try {
       const isCorrectAutomation = this.config.automationFile === 'copy-properties-from-parent-task';
 
@@ -17,10 +17,12 @@ class CopyPropertiesFromParentTaskAutomation extends AutomationBase {
         throw new Error('Not configured to run copy-properties-from-parent-task');
       }
 
+      const task = context.getTask();
+
       const parentTask = await this.clickupService.getTaskDetailsV2(task.parent);
 
       // copy custom fields from parent task
-      const customFieldsToCopy = this.config.metadata.customFieldsToCopy;
+      const customFieldsToCopy = this.config.then.data.customFieldsToCopy;
       const clickUpHelper = new ClickUpHelper(task.custom_fields);
       const customFields = clickUpHelper.copyCustomFields(parentTask, customFieldsToCopy);
 

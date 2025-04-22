@@ -8,7 +8,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
     this.clickupService = new ClickUpService();
   }
 
-  async run(task) {
+  async run(context) {
     try {
       // Get the update_custom_fields action from the then clause
       const isCorrectAutomation = this.config.automationFile === "post-weekly-release-digest";

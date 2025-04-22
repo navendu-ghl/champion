@@ -1,4 +1,5 @@
 const { sendLog } = require('./es-helper');
+const { TaskAutomationContext } = require('./config/automation-context');
 
 class AutomationManager {
     constructor(config) {
@@ -19,23 +20,25 @@ class AutomationManager {
         })
     }
 
-    async runAutomations(task) {
+    async runAutomations(context) {
         const results = [];
         const errors = [];
 
         for (const automation of this.automations.values()) {
             try {
-                const isValid = await automation.validate(task);
+                const isTaskAutomation = context instanceof TaskAutomationContext;
+                const task = isTaskAutomation ? context.getTask() : null;
+                const isValid = isTaskAutomation ? await automation.validate(task) : true;
                 if (!isValid) {
                     console.warn(`Automation ${automation.name} is not valid`);
                     continue;
                 } else {
                     console.log(`Automation ${automation.name} is valid`);
-                    await automation.run(task);
+                    await automation.run(context);
                     sendLog({
                         automation: automation.config.id,
                         manualActionCount: automation.config.metadata.manualActionCount || 0,
-                        taskId: task.id,
+                        taskId: isTaskAutomation ? task.id : 'general',
                         status: 'success'
                     });
                     results.push({ name: automation.name, status: 'success' });
@@ -45,7 +48,7 @@ class AutomationManager {
                 sendLog({
                     automation: automation.config.id,
                     manualActionCount: automation.config.metadata.manualActionCount || 0,
-                    taskId: task.id,
+                    taskId: isTaskAutomation ? task.id : 'general',
                     status: 'error',
                     error: error.message
                 });

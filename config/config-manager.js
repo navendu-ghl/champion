@@ -1,15 +1,18 @@
 const ClickUpHelper = require('../clickup-helper');
 const teams = require('../data/teams.json');
+const { TaskAutomationContext, GeneralAutomationContext } = require('./automation-context');
 
 class ConfigManager {
-    constructor(task) {
-        this.task = task;
-        this.customFields = task.custom_fields;
-
-        // maintain order
-        this.clickUpHelper = new ClickUpHelper();
-        this.config = this.compileConfig();
-        // maintain order
+    constructor(context) {
+        this.context = context;
+        if (context instanceof TaskAutomationContext) {
+            this.task = context.getTask();
+            this.customFields = this.task.custom_fields;
+            this.clickUpHelper = new ClickUpHelper();
+            this.config = this.compileConfig();
+        } else if (context instanceof GeneralAutomationContext) {
+            this.config = context.getConfig();
+        }
     }
 
     compileConfig() {

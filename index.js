@@ -1,7 +1,8 @@
-const functions = require('@google-cloud/functions-framework');
 const ClickUpService = require('./services/clickupService');
 const AutomationManager = require('./automation-manager');
 const ConfigManager = require('./config/config-manager');
+const { TaskAutomationContext, GeneralAutomationContext } = require('./config/automation-context');
+const generalAutomationConfig = require('./config/general-automation-config');
 const express = require('express');
 const app = express();
 
@@ -9,44 +10,58 @@ app.get('/', (req, res) => {
     res.send('Hello World');
 });
 
-app.all('/run', handleRun);
+app.all('/run', handleTaskAutomation);
 
 app.listen(8080, () => {
     console.log('Server is running on port 8080');
 });
 
-async function handleRun(req, res) {
-    // const taskId = '86cyh3nxk';
-    // const action = 'handle-spillover-task'
-    const taskId = req.query?.taskId;
-    const action = req.query?.action;
+async function handleTaskAutomation(req, res) {
+    const { taskId, action } = req.query;
+    // const taskId = '86cygabpu';
+    // const action = 'create-sub-tasks';
     if (!taskId || !action) {
-        res.status(400).send("Clickup taskId and action are required.");
+        console.error("Task ID and action are required for task automation");
+        res.status(400).send('Task ID and action are required for task automation');
         return;
     }
 
-    let results = [];
     try {
         const clickupService = new ClickUpService();
-
         const task = await clickupService.getTaskDetailsV2(taskId);
-        // console.log({ task: JSON.stringify(task, null, 2) });
-        const configManager = new ConfigManager(task);
-        configManager.enableAutomation(action);
-        const automationManager = new AutomationManager(configManager.getConfig());
-
-        let { results, errors } = await automationManager.runAutomations(task);
-        console.log('Automation results:', results);
-        if (errors.length > 0) {
-            console.error('Automation errors:', errors);
-        }
+        const context = new TaskAutomationContext(task);
+        const results = await runAutomation(context, action);
+        console.log(results);
+        res.send(`Automation run successfully`);
+        return;
     } catch (error) {
-        console.error('Error running automations:', error.message);
+        console.error('Error running task automation:', error.message);
+        res.status(500).send('Error running task automation');
+        return;
     }
-
-    res.send('Automation results:', results);
 }
 
-// functions.http('run', handleRun);
+async function handleGeneralAutomation(action, config = generalAutomationConfig) {
+    if (!action) {
+        console.error("Action is required for general automation");
+        return;
+    }
 
-// handleRun()
+    try {
+        const context = new GeneralAutomationContext(config);
+        return runAutomation(context, action);
+    } catch (error) {
+        console.error('Error running general automation:', error.message);
+        throw error;
+    }
+}
+
+async function runAutomation(context, action) {
+    console.log("Running automation", action);
+    const configManager = new ConfigManager(context);
+    configManager.enableAutomation(action);
+    const automationManager = new AutomationManager(configManager.getConfig());
+    return automationManager.runAutomations(context);
+}
+
+// handleTaskAutomation()

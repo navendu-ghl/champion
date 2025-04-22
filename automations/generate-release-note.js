@@ -12,13 +12,15 @@ class GenerateReleaseNoteAutomation extends AutomationBase {
     this.openAIService = new OpenAIService();
   }
 
-  async run(task) {
+  async run(context) {
     try {
       const isCorrectAutomation = this.config.automationFile === "generate-release-note";
 
       if (!isCorrectAutomation) {
         throw new Error("Not configured to run generate-release-note");
       }
+
+      const task = context.getTask();
 
       const [taskDetailsString, cuComments] = await Promise.all([
         this.clickupService.getTaskDetailsString(task.id),

@@ -9,14 +9,15 @@ class HandleSpilloverTaskAutomation extends AutomationBase {
     this.clickupService = new ClickUpService();
   }
 
-  async run(task) {
-
+  async run(context) {
     try {
       const isCorrectAutomation = this.config.automationFile === "handle-spillover-task";
 
       if (!isCorrectAutomation) {
         throw new Error("Not configured to run handle-spillover-task");
       }
+
+      const task = context.getTask();
 
       const taskWithSubtasks = await this.clickupService.getTaskDetailsV2(task.id, true);
       const subtaskIds = taskWithSubtasks.subtasks.map((subtask) => subtask.id);

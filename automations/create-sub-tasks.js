@@ -9,7 +9,7 @@ class CreateSubTasksAutomation extends AutomationBase {
     this.clickupService = new ClickUpService();
   }
 
-  async run(task) {
+  async run(context) {
     try {
       const isCorrectAutomation = this.config.automationFile === "create-sub-tasks";
 
@@ -17,8 +17,10 @@ class CreateSubTasksAutomation extends AutomationBase {
         throw new Error("Not configured to run create-sub-tasks");
       }
 
+      const task = context.getTask();
+
       const subTaskCategories = this.config.then.data.subTaskCategories;
-      const customFieldsToCopy = this.config.metadata.customFieldsToCopy;
+      const customFieldsToCopy = this.config.then.data.customFieldsToCopy;
       const clickUpHelper = new ClickUpHelper(task.custom_fields);
       const customFields = clickUpHelper.copyCustomFields(task, customFieldsToCopy);
 
@@ -30,6 +32,7 @@ class CreateSubTasksAutomation extends AutomationBase {
             id: field.key,
             value: field.value,
           })),
+          custom_item_id: null, // task type Task
         };
       });
 

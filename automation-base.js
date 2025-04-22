@@ -4,6 +4,11 @@ class AutomationBase {
     }
 
     validate(json, query = this.config.when) {
+        // if query is empty object, return true
+        if (Object.keys(query).length === 0) {
+            return true;
+        }
+
         if ('$and' in query) {
             return this.handleLogicalOperator(json, '$and', query.$and);
         }
