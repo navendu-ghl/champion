@@ -53,8 +53,13 @@ class SlackService {
       emoji: '🎨',
       title: 'UI/UX',
     },
-    Other: {
+    'Support Tickets': {
       order: 7,
+      emoji: '🎟️',
+      title: 'Support Tickets',
+    },
+    Other: {
+      order: 8,
       emoji: '📦',
       title: 'Other',
     },
@@ -180,6 +185,15 @@ class SlackService {
             },
           ],
         },
+        {
+          "type": "context",
+          "elements": [
+              {
+                  "type": "mrkdwn",
+                  "text": `<!subteam^${this.TEAM_CALENDAR_ID}>`
+              }
+          ]
+        }
       ],
     };
     messages.push(parentMessage);

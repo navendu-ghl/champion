@@ -324,32 +324,38 @@ class ClickUpService {
     }
   }
 
-  getSprintPhase(referenceStartDate = '2025-01-29') {
-    const today = new Date();
-    const refStart = new Date(referenceStartDate);
-
-    // Normalize to start of the day to avoid timezone issues
-    today.setHours(0, 0, 0, 0);
-    refStart.setHours(0, 0, 0, 0);
-
-    const daysSinceStart = Math.floor((today - refStart) / (1000 * 60 * 60 * 24));
-
-    // return the start and end date of the phase
-    const endDate = new Date(refStart.getTime() + daysSinceStart * 24 * 60 * 60 * 1000);
-    const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-    endDate.setHours(23, 59, 59, 999);
-
-    // Sprint is 14 days, check if today is a multiple of 14 since start
-    let phase = 2; // not a sprint check day
-    if (daysSinceStart % 14 === 0) {
-      phase = 0; // start
-    } else if (daysSinceStart % 14 === 7) {
-      phase = 1;
+  getHalfSprintDateRange() {
+    const currentDate = new Date();
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const sprintLength = 14; // in days
+    const halfSprint = 7; // in days
+    const sprintStart = new Date('2025-01-29T00:00:00Z'); // Reference Wednesday
+  
+    // Find how many days since the sprintStart
+    const daysSinceStart = Math.floor((currentDate - sprintStart) / MS_PER_DAY);
+    const daysIntoCurrentSprint = daysSinceStart % sprintLength;
+    const sprintNumber = Math.floor(daysSinceStart / sprintLength);
+    
+    let rangeStart, rangeEnd, phase;
+  
+    if (daysIntoCurrentSprint < halfSprint) {
+      // In the first half: return last half of previous sprint
+      rangeStart = new Date(sprintStart.getTime() + (sprintNumber - 1) * sprintLength * MS_PER_DAY + halfSprint * MS_PER_DAY);
+      rangeEnd = new Date(rangeStart.getTime() + (halfSprint - 1) * MS_PER_DAY);
+      phase = 0;
     } else {
-      phase = 2; // not a sprint check day
+      // In the second half: return first half of current sprint
+      rangeStart = new Date(sprintStart.getTime() + sprintNumber * sprintLength * MS_PER_DAY);
+      rangeEnd = new Date(rangeStart.getTime() + (halfSprint - 1) * MS_PER_DAY);
+      phase = 1;
     }
-    return { phase, startDate, endDate };
-  }
+  
+    return {
+      startDate: rangeStart,
+      endDate: rangeEnd,
+      phase,
+    };
+  }  
 
   getPreviousAndCurrentSprint(sprints) {
     const now = Date.now();
@@ -408,7 +414,9 @@ class ClickUpService {
       const _isParentTaskPresentInList = task.parent && taskMap[task.parent]?.id
       const _isParentTaskClosed = _isParentTaskPresentInList && this.closedStatuses.includes(taskMap[task.parent]?.status?.status)
 
-      // console.log(`\nname: ${task.name}, _isTaskClosed: ${_isTaskClosed}, startDate: ${startDate}, endDate: ${endDate}, _closedDate: ${_closedDate}, _isTaskInTimeRange: ${_isTaskInTimeRange}, _isParentTask: ${_isParentTask}, _isParentTaskPresentInList: ${_isParentTaskPresentInList}, _isParentTaskClosed: ${_isParentTaskClosed}`)
+      // if (task.id === '86cyjg2ra') {
+      //   console.log(`\nname: ${task.name}, _isTaskClosed: ${_isTaskClosed}, startDate: ${startDate}, endDate: ${endDate}, _closedDate: ${_closedDate}, _isTaskInTimeRange: ${_isTaskInTimeRange}, taskParent: ${task.parent}, _isParentTask: ${_isParentTask}, _isParentTaskPresentInList: ${_isParentTaskPresentInList}, _isParentTaskClosed: ${_isParentTaskClosed}`)
+      // }
 
       let _shouldProcessTask = false
       if(_isTaskClosed && _isTaskInTimeRange && _isParentTask) {
@@ -426,15 +434,28 @@ class ClickUpService {
       if (_shouldProcessTask) {
         const name = task.name;
 
-        const taskAssignee = task.assignees[0]?.username;
+        const taskAssignees = task.assignees?.map((assignee) => assignee.username) || []
         const subtaskIds = taskMap[task.id]?.subtaskIds || []
         const subtaskAssignees = subtaskIds.map((subtaskId) => taskMap[subtaskId].assignees[0]?.username)
-        const assignees = [...new Set([taskAssignee, ...subtaskAssignees])]
+        const assignees = [...new Set([...taskAssignees, ...subtaskAssignees])]
         
         const categoryValueIdx = task.custom_fields.find(
           (field) => field.id === this.clickupHelper.getCustomFieldId(task.custom_fields, '📖 Category'),
         )?.value;
-        const category = this.clickupHelper.getCustomFieldOptionValue(task.custom_fields, '📖 Category', categoryValueIdx) || 'Other';
+        let category = this.clickupHelper.getCustomFieldOptionValue(task.custom_fields, '📖 Category', categoryValueIdx) || 'Other';
+
+        // Find if the task is a support ticket
+        if (category === 'Other') {
+          const _isSupportTicketTagPresent = task.tags.includes('support production ticket')
+          const _categoryCustomFieldId = this.clickupHelper.getCustomFieldId(task.custom_fields, 'Category')
+          const _categoryCustomFieldValueIdx = task.custom_fields.find(
+            (field) => field.id === _categoryCustomFieldId,
+          )?.value;
+          const _categoryCustomFieldValue = this.clickupHelper.getCustomFieldOptionValue(task.custom_fields, 'Category', _categoryCustomFieldValueIdx)
+          const _isSupportTicketCustomFieldPresent = _categoryCustomFieldValue === 'Support Production Tickets'
+
+          category = _isSupportTicketTagPresent || _isSupportTicketCustomFieldPresent ? 'Support Tickets' : 'Other';
+        }
 
         if (!summary[category]) {
           summary[category] = {
