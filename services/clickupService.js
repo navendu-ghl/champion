@@ -30,7 +30,7 @@ class ClickUpService {
 
   statuses = [
     'Open',
-    // "product backlog",
+    "product backlog",
     // "product in progress",
     'product review',
     'ready for design',
@@ -316,6 +316,7 @@ class ClickUpService {
     let page = 0;
     let allTasks = [];
     let hasMoreTasks = true;
+    const limit = 100;
 
     while (hasMoreTasks) {
       // this API has a defaukt limit of 100 tasks per page
@@ -363,8 +364,8 @@ class ClickUpService {
     }
   
     return {
-      startDate: rangeStart,
-      endDate: rangeEnd,
+      startDate: new Date(rangeStart.setHours(0, 0, 0, 0)),
+      endDate: new Date(rangeEnd.setHours(23, 59, 59, 999)),
       phase,
     };
   }  
@@ -425,16 +426,18 @@ class ClickUpService {
       const _isParentTask = !task.parent
       const _isParentTaskPresentInList = task.parent && taskMap[task.parent]?.id
       const _isParentTaskClosed = _isParentTaskPresentInList && this.closedStatuses.includes(taskMap[task.parent]?.status?.status)
+      const _isGettingCarriedOver = task.tags.find((tag) => tag.name === 'spillover-trigger')
 
-      // if (task.id === '86cyjg2ra') {
-      //   console.log(`\nname: ${task.name}, _isTaskClosed: ${_isTaskClosed}, startDate: ${startDate}, endDate: ${endDate}, _closedDate: ${_closedDate}, _isTaskInTimeRange: ${_isTaskInTimeRange}, taskParent: ${task.parent}, _isParentTask: ${_isParentTask}, _isParentTaskPresentInList: ${_isParentTaskPresentInList}, _isParentTaskClosed: ${_isParentTaskClosed}`)
+      // if (task.id === '86cxreaym') {
+      //   console.log({ tags: task.tags })
+      //   console.log(`\nname: ${task.name}, _isTaskClosed: ${_isTaskClosed}, startDate: ${startDate}, endDate: ${endDate}, _closedDate: ${_closedDate}, _isTaskInTimeRange: ${_isTaskInTimeRange}, taskParent: ${task.parent}, _isParentTask: ${_isParentTask}, _isParentTaskPresentInList: ${_isParentTaskPresentInList}, _isParentTaskClosed: ${_isParentTaskClosed}, _isGettingCarriedOver: ${_isGettingCarriedOver}`)
       // }
 
       let _shouldProcessTask = false
-      if(_isTaskClosed && _isTaskInTimeRange && _isParentTask) {
+      if(_isTaskClosed && _isTaskInTimeRange && _isParentTask && !_isGettingCarriedOver) {
         // process parent task
         _shouldProcessTask = true
-      } else if (_isTaskClosed && _isTaskInTimeRange && !_isParentTask && !_isParentTaskPresentInList) {
+      } else if (_isTaskClosed && _isTaskInTimeRange && !_isParentTask && !_isParentTaskPresentInList && !_isGettingCarriedOver) {
         // process task if it is not a parent task and it's parent task is not in the list
         _shouldProcessTask = true
       } 
@@ -458,7 +461,7 @@ class ClickUpService {
 
         // Find if the task is a support ticket
         if (category === 'Other') {
-          const _isSupportTicketTagPresent = task.tags.includes('support production ticket')
+          const _isSupportTicketTagPresent = task.tags.find((tag) => tag.name === 'support production ticket')
           const _categoryCustomFieldId = this.clickupHelper.getCustomFieldId(task.custom_fields, 'Category')
           const _categoryCustomFieldValueIdx = task.custom_fields.find(
             (field) => field.id === _categoryCustomFieldId,
