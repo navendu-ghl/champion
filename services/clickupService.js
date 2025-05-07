@@ -313,15 +313,27 @@ class ClickUpService {
   }
 
   async fetchTasksByListId(listId) {
-    const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${this.statuses.map((status) => `statuses=${status}`).join('&')}`;
+    let page = 0;
+    let allTasks = [];
+    let hasMoreTasks = true;
 
-    try {
-      const response = await this.makeClickUpRequest(url);
-      return response.tasks;
-    } catch (error) {
-      console.error('Failed to fetch ClickUp tasks:', error.response ? error.response.data : error.message);
-      return null;
+    while (hasMoreTasks) {
+      // this API has a defaukt limit of 100 tasks per page
+      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${this.statuses.map((status) => `statuses=${status}`).join('&')}&page=${page}`;
+
+      try {
+        const response = await this.makeClickUpRequest(url);
+        const tasks = response.tasks || [];
+        allTasks = allTasks.concat(tasks);
+        hasMoreTasks = tasks.length === limit; // If the number of tasks is less than the limit, we've fetched all tasks
+        page += 1;
+      } catch (error) {
+        console.error('Failed to fetch ClickUp tasks:', error.response ? error.response.data : error.message);
+        hasMoreTasks = false;
+      }
     }
+
+    return allTasks;
   }
 
   getHalfSprintDateRange() {
