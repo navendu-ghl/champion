@@ -58,7 +58,8 @@ class ClickUpHelper {
     }
 
     getCurrentAndNextSprint(sprints) {
-        const now = Date.now();
+        // added a 3 day buffer to the current date
+        const now = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
         // Convert start and due dates to numbers and sort the sprints by start_date
         const sortedSprints = sprints

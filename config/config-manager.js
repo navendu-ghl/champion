@@ -153,7 +153,7 @@ class ConfigManager {
                     $and: [
                         { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
                         { "creator.email": { $in: teams["automation-calendars"].members } },
-                        { "tags[].name": { $includes: "spillover" } }
+                        { "tags[].name": { $includes: "spillover-trigger" } }
                     ]
                 },
                 then: {
