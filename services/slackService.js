@@ -267,13 +267,79 @@ class SlackService {
     return messages;
   }
 
-  async postMessage(message, threadId = null) {
+  formatMessageForReleaseDigestReviewer() {
+    const message = { text: 'Review the release digest',  blocks: [
+      {
+        "type": "section",
+        "text": {
+          "type": "plain_text",
+          "text": "Please review the release digest",
+          "emoji": true
+        }
+      },
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Re-generate",
+              "emoji": true
+            },
+            "value": "re-generate-release-digest",
+            "action_id": "re-generate-release-digest"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Publish",
+              "emoji": true
+            },
+            "style": "danger",
+            "value": "publish-release-digest",
+            "action_id": "publish-release-digest"
+          }
+        ]
+      }
+    ],
+    };
+
+    return message;
+  }
+
+
+  async openDmChannel(userId) {
     try {
+      const response = await axios.post(
+        `${this.baseUrl}/conversations.open`,
+        { users: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${this.botToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return response.data?.channel?.id;
+    } catch (error) {
+      console.error('Error opening DM channel:', error.message);
+      return false;
+    }
+  }
+
+  async postMessage({ message, channelId, threadId = null }) {
+    try {
+      if (!channelId) {
+        console.error('Channel ID is required');
+        return null;
+      }
       const _message = typeof message === 'string' ? { text: message } : message;
       const response = await axios.post(
         `${this.baseUrl}/chat.postMessage`,
         {
-          channel: this.SLACK_CHANNEL_ID,
+          channel: channelId,
           ..._message,
           parse: 'mrkdwn', // Enable markdown parsing
           thread_ts: threadId,
