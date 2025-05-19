@@ -23,10 +23,10 @@ class AutomationManager {
     async runAutomations(context) {
         const results = [];
         const errors = [];
+        const isTaskAutomation = context instanceof TaskAutomationContext;
 
         for (const automation of this.automations.values()) {
             try {
-                const isTaskAutomation = context instanceof TaskAutomationContext;
                 const task = isTaskAutomation ? context.getTask() : null;
                 const isValid = isTaskAutomation ? await automation.validate(task) : true;
                 if (!isValid) {
