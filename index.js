@@ -13,39 +13,7 @@ app.get('/', (req, res) => {
     res.send('Hello World');
 });
 
-app.all('/run', async (req, res) => {
-    const { taskId, action, type } = req.query;
-
-    if (!action) {
-        return res.status(400).send('Action is required for automation');
-    }
-
-    try {
-        let result;
-        if (type === 'general') {
-            // Handle general automation
-            result = await handleGeneralAutomation(action);
-        } else if (taskId) {
-            // If taskId is present, handle task automation
-            result = await handleTaskAutomation(req, res);
-            return; // handleTaskAutomation handles the response
-        } else {
-            return res.status(400).send('Invalid automation type. Provide either type=general or taskId parameter');
-        }
-
-        res.json({
-            status: 'success',
-            message: 'Automation completed successfully',
-            result
-        });
-    } catch (error) {
-        console.error('Error in automation:', error);
-        res.status(500).json({
-            status: 'error',
-            message: error.message || 'Internal server error'
-        });
-    }
-});
+app.all('/run', handleTaskAutomation);
 
 app.all('/general', handleGeneralAutomation);
 
