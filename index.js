@@ -4,7 +4,10 @@ const ConfigManager = require('./config/config-manager');
 const { TaskAutomationContext, GeneralAutomationContext } = require('./config/automation-context');
 const generalAutomationConfig = require('./config/general-automation-config');
 const express = require('express');
+const bodyParser = require('body-parser');
+
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -44,6 +47,10 @@ app.all('/run', async (req, res) => {
     }
 });
 
+app.all('/general', handleGeneralAutomation);
+
+app.all('/slack/interaction', handleSlackInteraction);
+
 app.listen(8080, () => {
     console.log('Server is running on port 8080');
 });
@@ -73,7 +80,11 @@ async function handleTaskAutomation(req, res) {
     }
 }
 
-async function handleGeneralAutomation(action, config = generalAutomationConfig) {
+async function handleGeneralAutomation(req, res) {
+    const action = req.query.action;
+    const mode = req.query.mode;
+    const config = generalAutomationConfig;
+    config.postWeeklyReleaseDigest.then.data.mode = mode || 'review';
     if (!action) {
         console.error("Action is required for general automation");
         return;
@@ -88,6 +99,26 @@ async function handleGeneralAutomation(action, config = generalAutomationConfig)
     }
 }
 
+async function handleSlackInteraction(req, res) {
+    const payload = JSON.parse(req.body.payload);
+    const action = payload.actions?.[0];
+    // const user = payload.user.username;
+    const actionId = action?.action_id;
+
+    switch (actionId) {
+        case 're-generate-release-digest':
+            console.log("Re-generating release digest");
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'review' } });
+            break;
+        case 'publish-release-digest':
+            console.log("Publishing release digest");
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'publish' } });
+            break;
+    }
+
+    res.send('Done');
+}
+
 async function runAutomation(context, action) {
     console.log("Running automation", action);
     const configManager = new ConfigManager(context);
@@ -97,3 +128,4 @@ async function runAutomation(context, action) {
 }
 
 // handleTaskAutomation()
+// handleGeneralAutomation('post-weekly-release-digest')
