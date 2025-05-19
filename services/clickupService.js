@@ -30,6 +30,7 @@ class ClickUpService {
 
   statuses = [
     'Open',
+    "todo",
     "product backlog",
     // "product in progress",
     'product review',
@@ -312,7 +313,7 @@ class ClickUpService {
     }
   }
 
-  async fetchTasksByListId(listId) {
+  async fetchTasksByListId(listId, excludeStories = false) {
     let page = 0;
     let allTasks = [];
     let hasMoreTasks = true;
@@ -332,6 +333,10 @@ class ClickUpService {
         console.error('Failed to fetch ClickUp tasks:', error.response ? error.response.data : error.message);
         hasMoreTasks = false;
       }
+    }
+
+    if (excludeStories) {
+      return allTasks.filter((task) => task.custom_item_id !== 1005); // User Stories are excluded in summary
     }
 
     return allTasks;
@@ -481,6 +486,98 @@ class ClickUpService {
         summary[category].tasks.push({ name, assignees, id: task.id, url: task.url });
       }
     });
+    return summary;
+  }
+
+  getCurrentAndNextSprint(sprints) {
+    const now = Date.now();
+
+    // Convert start and due dates to numbers and sort the sprints by start_date
+    const sortedSprints = sprints
+      .map((sprint) => ({
+        ...sprint,
+        start: Number(sprint.start_date),
+        end: Number(sprint.due_date),
+      }))
+      .sort((a, b) => a.start - b.start);
+
+    let current = null;
+    let next = null;
+
+    for (let i = 0; i < sortedSprints.length; i++) {
+      const sprint = sortedSprints[i];
+      if (now >= sprint.start && now <= sprint.end) {
+        current = sprint;
+        next = sortedSprints[i + 1] || null;
+        break;
+      }
+
+      // If now is before the first sprint
+      if (now < sprint.start) {
+        next = sprint;
+        break;
+      }
+    }
+
+    return { current, next };
+  }
+
+  async fetchLists() {
+    const url = `${this.clickupBaseUrl}/folder/${this.CLICKUP_SPRINT_FOLDER_ID}/list`;
+    const response = await axios.get(url, { headers: this.headers });
+    return response.data.lists;
+}
+
+  async fetchCurrentSprint() {
+    const lists = await this.fetchLists();
+    const { current, next } = this.getCurrentAndNextSprint(lists);
+
+    return current.id;
+  }
+
+  async summarizeTasksByAssignee(listId) {
+    console.log("Fetching tasks for list:", listId);
+    const tasks = await this.fetchTasksByListId(listId, true);
+    if (!tasks) {
+      console.log("No tasks found");
+      return null;
+    }
+    console.log("Tasks fetched:", tasks.length);
+
+    const summary = {};
+
+    // Helper function to process a single task
+    const processTask = (task) => {
+      console.log({ taskName: task.name, status: task.status?.status });
+      if (!task.assignees || !Array.isArray(task.assignees)) return;
+
+      task.assignees.forEach((assignee) => {
+        const assigneeName = assignee.username;
+
+        if (!summary[assigneeName]) {
+          summary[assigneeName] = {
+            tasks: [],
+          };
+        }
+
+        if (!this.closedStatuses.includes(task.status?.status)) {
+          summary[assigneeName].tasks.push({
+            id: task.id,
+            name: task.name,
+            status: task.status?.status || "No Status",
+            url: task.url,
+            points: task.points,
+            due_date: task.due_date,
+          });
+        }
+      });
+    };
+
+    // Process all tasks in the response
+    if (tasks && Array.isArray(tasks)) {
+      tasks.forEach(processTask);
+    }
+
     return summary;
   }
 }

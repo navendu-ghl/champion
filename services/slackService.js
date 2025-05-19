@@ -18,7 +18,10 @@ class SlackService {
     'Lavish Patni': 'U03U00BPMC5',
     'Ashish Ahuja': 'U05KASZT6P2',
     'Nikhil Kumar': 'U08G3EDNR4Y',
-    'Ankit Jain': 'U03UXFXFNHW'
+    'Ankit Jain': 'U03UXFXFNHW',
+    'Harsh Kumar': 'U08AZV4RGCD',
+    'Prabal Sharma': 'U06RZA9J5ME',
+    'Swadha Bhoj': 'U05R748ELTE'
   };
   TEAM_CALENDAR_ID = 'S03T400DNN5';
 
@@ -364,6 +367,99 @@ class SlackService {
       console.error('Error posting message:', error.message);
       return false;
     }
+  }
+
+  getStandupSummaryParentMessage() {
+    const date = new Date().toLocaleDateString("en-GB");
+
+    const parentMessage = {
+      text: `🚀 Daily Task Summary: ${date}`,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "plain_text",
+            text: `🚀 Daily Task Summary: ${date}`,
+            emoji: true,
+          },
+        },
+        {
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: `<!subteam^${this.TEAM_CALENDAR_ID}>`,
+            },
+          ],
+        },
+      ],
+    };
+    return parentMessage;
+  }
+
+  formatStandupSummaryForSlack(summary) {
+    if (!summary) return ["No tasks found."];
+
+    const messages = [];
+    const date = new Date().toLocaleDateString();
+
+    Object.entries(summary).forEach(([assignee, data]) => {
+      const message = {
+        text: `Task Summary for ${assignee}`,
+        blocks: [
+          {
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: `👤  ${assignee}`,
+              emoji: true,
+            },
+          },
+          {
+            type: "context",
+            elements: [
+              {
+                type: "mrkdwn",
+                text: `<@${this.SLACK_MEMBER_IDS[assignee]}>`,
+              },
+            ],
+          },
+        ],
+      };
+
+      data.tasks.forEach((task) => {
+        const dueDate = task.due_date ? new Date(parseInt(task.due_date)).toLocaleDateString("en-GB") : "No due date";
+        const points = task.points || 0;
+        const status = task.status;
+        message.blocks.push(
+          ...[
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: `• ${task.name}`,
+              },
+            },
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "mrkdwn",
+                  text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
+                },
+              ],
+            },
+          ],
+        );
+      });
+
+      message.blocks.push({
+        type: "divider",
+      });
+      messages.push(message);
+    });
+
+    return messages;
   }
 }
 
