@@ -30,6 +30,7 @@ class ClickUpService {
 
   statuses = [
     'Open',
+    "todo",
     "product backlog",
     // "product in progress",
     'product review',
