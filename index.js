@@ -37,8 +37,7 @@ async function handleTaskAutomation(req, res) {
         const clickupService = new ClickUpService();
         const task = await clickupService.getTaskDetailsV2(taskId);
         const context = new TaskAutomationContext(task);
-        const results = await runAutomation(context, action);
-        console.log(results);
+        await runAutomation(context, action);
         res.status(200).send(`Automation run successfully`);
         return;
     } catch (error) {
@@ -50,6 +49,7 @@ async function handleTaskAutomation(req, res) {
 
 // TODO: return 
 async function handleGeneralAutomation(req, res) {
+    const isApiCall = req && res;
     const action = req.query.action;
     const team = req.query.team;
     const mode = req.query.mode;
@@ -67,10 +67,17 @@ async function handleGeneralAutomation(req, res) {
 
     try {
         const context = new GeneralAutomationContext(config);
-        return runAutomation(context, action);
+        await runAutomation(context, action);
+        if (isApiCall) {
+            return res.status(200).send('Automation run successfully');
+        }
+        return;
     } catch (error) {
         console.error('Error running general automation:', error.message);
-        return;
+        if (isApiCall) {
+            return res.status(500).send(`Error running general automation, Action: ${action}, Team: ${team}`);
+        }
+        throw error;
     }
 }
 
