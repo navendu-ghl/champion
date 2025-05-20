@@ -36,7 +36,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
       const { current, previous } = await this.clickupService.fetchCurrentAndPreviousSprint();
       const sprintList = phase === 0 ? previous : current;
 
-      const tasks = await this.clickupService.fetchTasksByListId(sprintList.id);
+      const tasks = await this.clickupService.fetchTasksByListId({ listId: sprintList.id });
 
       const summary = this.clickupService.summarizeTasksForReleaseDigest({ tasks, startDate, endDate });
       const messages = this.slackService.formatReleaseDigestMessages({ summary, startDate, endDate });
@@ -58,12 +58,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
   async sendReleaseDigestForReview(messages) {
     try {
-      let userId
-      if (this.team === 'automation-calendars') {
-        userId = slackData['automation-calendars']['navendu.duari@gohighlevel.com'];
-      } else if (this.team === 'mobile') {
-        userId = slackData.mobile['smit.sonani@gohighlevel.com'];
-      }
+      const userId = slackData[this.team].reviewer;
       if (!userId) {
         throw new Error("sendReleaseDigestForReview: User ID not found");
       }
@@ -85,12 +80,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
   async publishReleaseDigest(messages) {
     try {
-      let channelId
-      if (this.team === 'automation-calendars') {
-        channelId = slackData['automation-calendars']['calendar-internal'];
-      } else if (this.team === 'mobile') {
-        channelId = slackData.mobile['mobile-internal'];
-      }
+      const channelId = slackData[this.team].internalChannel;
       if (!channelId) {
         throw new Error("publishReleaseDigest: Channel ID not found");
       }

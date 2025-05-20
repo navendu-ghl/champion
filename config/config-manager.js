@@ -1,5 +1,5 @@
 const ClickUpHelper = require('../clickup-helper');
-const teams = require('../data/teams.json');
+const clickupData = require('../data/clickup.json');
 const { TaskAutomationContext, GeneralAutomationContext } = require('./automation-context');
 
 class ConfigManager {
@@ -29,7 +29,7 @@ class ConfigManager {
                 },
                 when: {
                     $or: [
-                        { "creator.email": { $in: teams["automation-calendars"].members } }
+                        { "creator.email": { $in: clickupData["automation-calendars"].members } }
                     ]
                 },
                 then: {
@@ -109,7 +109,7 @@ class ConfigManager {
                 when: {
                     $and: [
                         { "parent": { $exists: true } },
-                        { "creator.email": { $in: teams["automation-calendars"].members } }
+                        { "creator.email": { $in: clickupData["automation-calendars"].members } }
                     ]
                 },
                 then: {
@@ -130,7 +130,7 @@ class ConfigManager {
                 when: {
                     $and: [
                         { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
-                        { "creator.email": { $in: teams["automation-calendars"].members } }
+                        { "creator.email": { $in: clickupData["automation-calendars"].members } }
                     ]
                 },
                 then: {
@@ -152,7 +152,7 @@ class ConfigManager {
                 when: {
                     $and: [
                         { "custom_item_id": { $eq: this.clickUpHelper.getCustomItemId("User Story") } },
-                        { "creator.email": { $in: teams["automation-calendars"].members } },
+                        { "creator.email": { $in: clickupData["automation-calendars"].members } },
                         { "tags[].name": { $includes: "spillover-trigger" } }
                     ]
                 },

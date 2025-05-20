@@ -1,0 +1,145 @@
+{
+    "automation-calendars": {
+        "sprintFolderId": "90163086740",
+        "members": [
+            "ankit@gohighlevel.com",
+            "anand@gohighlevel.com",
+            "ujjaval.moradiya@gohighlevel.com",
+            "lidhish.c@gohighlevel.com",
+            "tarun.agarwal@gohighlevel.com",
+            "raghav.deshpande@gohighlevel.com",
+            "navendu.duari@gohighlevel.com",
+            "bhavana.gupta@gohighlevel.com",
+            "devangi.naliyadhara@gohighlevel.com",
+            "suvodip.mondal@gohighlevel.com",
+            "sarthak.saxena@gohighlevel.com",
+            "ashish.ahuja@gohighlevel.com",
+            "lavish@gohighlevel.com",
+            "ajay.yerra@gohighlevel.com",
+            "dhananjay.waghade@gohighlevel.com",
+            "nikhil.kumar@gohighlevel.com",
+            "swadha.bhoj@gohighlevel.com"
+        ],
+        "customFields": [
+            {
+                "field_id": "3eebd94c-e275-4588-9844-7e0791ac98b3",
+                "operator": "=",
+                "value": "3e010797-3387-4ecc-b374-dfcaec70960b"
+            },
+            {
+                "field_id": "e22b9906-6bb7-48f6-9d15-374cb18106ee",
+                "operator": "=",
+                "value": "10dfc516-26dd-4b6f-b174-e8571801241c"
+            }
+        ],
+        "statuses": [
+            "Open",
+            "todo",
+            "product backlog",
+            "product review",
+            "ready for design",
+            "ready for eng (direct)",
+            "sprint backlog",
+            "sprint assigned",
+            "dev in progress",
+            "dev review",
+            "dev testing",
+            "ready for qa",
+            "qa in progress",
+            "qa fail",
+            "bug fixing",
+            "qa complete",
+            "task - in progress",
+            "task - blocked",
+            "ready for deploy",
+            "task - complete",
+            "deployed",
+            "Closed"
+        ],
+        "standupStatuses": [
+            "Open",
+            "todo",
+            "product backlog",
+            "product review",
+            "ready for design",
+            "ready for eng (direct)",
+            "sprint backlog",
+            "sprint assigned",
+            "dev in progress",
+            "dev review",
+            "dev testing",
+            "ready for qa",
+            "qa in progress",
+            "qa fail",
+            "bug fixing",
+            "qa complete",
+            "task - in progress",
+            "task - blocked",
+            "ready for deploy"
+        ],
+        "closedStatuses": [
+            "task - complete",
+            "deployed",
+            "Closed"
+        ]
+    },
+    "mobile": {
+        "sprintFolderId": "42024674",
+        "members": [
+            "smit.sonani@gohighlevel.com",
+            "Amit.kumar@gohighlevel.com",
+            "Biswajit@gohighlevel.com",
+            "paterson.selvakumar@gohighlevel.com",
+            "dhruv.sirodaria@gohighlevel.com",
+            "dinesh.parmar@gohighlevel.com",
+            "jaldeep@gohighlevel.com",
+            "kislay.raj@gohighlevel.com",
+            "milind@gohighlevel.com",
+            "nikhil.siddasamudra@gohighlevel.com",
+            "nitish.krishna@gohighlevel.com",
+            "rajat.kamleshwar@gohighlevel.com",
+            "sahdeep@gohighlevel.com",
+            "shubham.soni@gohighlevel.com",
+            "sonu.sharma@gohighlevel.com",
+            "srinidhi.nagabhushan@gohighlevel.com",
+            "srujan.mhase@gohighlevel.com",
+            "urvash.singh@gohighlevel.com",
+            "yashvardhan.awasthi@gohighlevel.com",
+            "yukta.tn@gohighlevel.com"
+        ],
+        "statuses": [
+            "sprint backlog",
+            "todo",
+            "ongoing product work",
+            "product work complete",
+            "ready for design",
+            "in design",
+            "design complete",
+            "blocked",
+            "qa fail",
+            "in development",
+            "development done",
+            "awaiting qa",
+            "in qa",
+            "in dev review",
+            "qa pass",
+            "pr merged to dev",
+            "Closed"
+        ],
+        "standupStatuses": [
+            "todo",
+            "blocked",
+            "qa fail",
+            "in development",
+            "development done",
+            "awaiting qa",
+            "in qa",
+            "in dev review",
+            "qa pass",
+            "pr merged to dev"
+        ],
+        "closedStatuses": [
+            "Closed"
+        ]
+    }
+}

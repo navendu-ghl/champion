@@ -7,10 +7,10 @@ class PostStandupSummaryAutomation extends AutomationBase {
   constructor(config) {
     super(config);
     this.name = config.name;
-    this.clickupService = new ClickUpService();
-    this.slackService = new SlackService();
     this.team = config.then.data.team;
     this.mode = config.then.data.mode;
+    this.clickupService = new ClickUpService({ team: this.team });
+    this.slackService = new SlackService({ team: this.team });
   }
 
   async run(context) {
@@ -24,7 +24,7 @@ class PostStandupSummaryAutomation extends AutomationBase {
       // Get task summary from ClickUp
       const currentSprintId = await this.clickupService.fetchCurrentSprint();
       console.log({ currentSprintId });
-      const summary = await this.clickupService.summarizeTasksByAssignee(currentSprintId);
+      const summary = await this.clickupService.summarizeTasksForStandup(currentSprintId);
 
       const parentMessage = this.slackService.getStandupSummaryParentMessage();
       const messages = this.slackService.formatStandupSummaryForSlack(summary);
@@ -46,12 +46,7 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
   async sendStandupSummaryForReview({ parentMessage, messages }) {
     try {
-      let userId
-      if (this.team === 'automation-calendars') {
-        userId = slackData['automation-calendars']['navendu.duari@gohighlevel.com'];
-      } else if (this.team === 'mobile') {
-        userId = slackData.mobile['smit.sonani@gohighlevel.com'];
-      }
+      const userId = slackData[this.team].reviewer;
       if (!userId) {
         throw new Error("sendStandupSummaryForReview: User ID not found");
       }
@@ -59,7 +54,7 @@ class PostStandupSummaryAutomation extends AutomationBase {
       console.log({ userId, channelId });
       const response = await this.slackService.postMessage({ message: parentMessage, channelId });
       if (response.ok && response.ts) {
-      for (const message of messages) {
+        for (const message of messages) {
           await this.slackService.postMessage({ message, channelId, threadId: response.ts });
         }
       }
@@ -71,12 +66,7 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
   async publishStandupSummary({ parentMessage, messages }) {
     try {
-      let channelId
-      if (this.team === 'automation-calendars') {
-        channelId = slackData['automation-calendars']['calendar-internal'];
-      } else if (this.team === 'mobile') {
-        channelId = slackData.mobile['mobile-internal'];
-      }
+      const channelId = slackData[this.team].internalChannel;
       if (!channelId) {
         throw new Error("publishStandupSummary: Channel ID not found");
       }

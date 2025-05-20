@@ -1,65 +1,25 @@
-const axios = require('axios');
-const teams = require('../data/teams.json');
-const ClickUpHelper = require('../clickup-helper');
+const axios = require("axios");
+const clickupData = require("../data/clickup.json");
+const usersData = require("../data/users.json");
+const ClickUpHelper = require("../clickup-helper");
 
 class ClickUpService {
-  apiKey = 'pk_61405013_J7LUL9D1W7RR3WH7HURV3JMWFIWMO2T0';
+  apiKey = "pk_61405013_J7LUL9D1W7RR3WH7HURV3JMWFIWMO2T0";
   // apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
 
-  constructor() {
-    this.CLICKUP_SPRINT_FOLDER_ID = teams['automation-calendars'].sprintFolderId;
-    this.clickupBaseUrl = 'https://api.clickup.com/api/v2';
+  constructor({ team }) {
+    this.CLICKUP_SPRINT_FOLDER_ID = clickupData[team].sprintFolderId;
+    this.customFields = clickupData[team].customFields || [];
+    this.statuses = clickupData[team].statuses || [];
+    this.standupStatuses = clickupData[team].standupStatuses || [];
+    this.closedStatuses = clickupData[team].closedStatuses || [];
+    this.assignees = usersData.filter((user) => clickupData[team].members.includes(user.email)).map((user) => user.id) || [];
+    this.clickupBaseUrl = "https://api.clickup.com/api/v2";
     this.headers = { Authorization: this.apiKey };
     this.clickupHelper = new ClickUpHelper();
   }
 
-  closedStatuses = ['task - complete', 'deployed', 'Closed'];
-
-  customFields = [
-    {
-      field_id: '3eebd94c-e275-4588-9844-7e0791ac98b3',
-      operator: '=',
-      value: '3e010797-3387-4ecc-b374-dfcaec70960b',
-    },
-    {
-      field_id: 'e22b9906-6bb7-48f6-9d15-374cb18106ee',
-      operator: '=',
-      value: '10dfc516-26dd-4b6f-b174-e8571801241c',
-    },
-  ];
-
-  statuses = [
-    'Open',
-    "todo",
-    "product backlog",
-    // "product in progress",
-    'product review',
-    'ready for design',
-    'ready for eng (direct)',
-    // "design backlog",
-    // "design in progress",
-    // "design review",
-    // "design complete",
-    'sprint backlog',
-    'sprint assigned',
-    'dev in progress',
-    'dev review',
-    'dev testing',
-    'ready for qa',
-    'qa in progress',
-    'qa fail',
-    'bug fixing',
-    'qa complete',
-    'task - in progress',
-    'task - blocked',
-    // "ready fo ux audit",
-    // "ux audit in progress",
-    // "ux audit complete",
-    'ready for deploy',
-    ...this.closedStatuses,
-  ];
-
-  async makeClickUpRequest(url, method = 'GET', data = null) {
+  async makeClickUpRequest(url, method = "GET", data = null) {
     try {
       const config = {
         method,
@@ -71,7 +31,7 @@ class ClickUpService {
       const response = await axios(config);
       return response.data;
     } catch (error) {
-      console.error('Error calling ClickUp API:', JSON.stringify(error));
+      console.error("Error calling ClickUp API:", JSON.stringify(error));
       throw error;
     }
   }
@@ -83,9 +43,9 @@ class ClickUpService {
   async getTaskDetails(taskId, includeSubtasks = false) {
     try {
       // const _isCustomTaskId = isCustomTaskId(taskId)
-      const url = `${this.clickupBaseUrl}/task/${taskId}?include_subtasks=${includeSubtasks}${this.isCustomTaskId(taskId) ? '&custom_task_ids=true&team_id=8631005' : ''}`;
+      const url = `${this.clickupBaseUrl}/task/${taskId}?include_subtasks=${includeSubtasks}${this.isCustomTaskId(taskId) ? "&custom_task_ids=true&team_id=8631005" : ""}`;
       const data = await this.makeClickUpRequest(url);
-      return { title: data?.name || '', description: data?.description || '', subtasks: data?.subtasks || [] };
+      return { title: data?.name || "", description: data?.description || "", subtasks: data?.subtasks || [] };
     } catch (error) {
       console.error(`Error in getTaskDetails`);
       throw error;
@@ -94,7 +54,7 @@ class ClickUpService {
 
   async getTaskComments(taskId, onlyText = false) {
     try {
-      const url = `${this.clickupBaseUrl}/task/${taskId}/comment${this.isCustomTaskId(taskId) ? '?custom_task_ids=true&team_id=8631005' : ''}`;
+      const url = `${this.clickupBaseUrl}/task/${taskId}/comment${this.isCustomTaskId(taskId) ? "?custom_task_ids=true&team_id=8631005" : ""}`;
       const data = await this.makeClickUpRequest(url);
       return onlyText ? data?.comments?.map((comment) => comment.comment_text) || [] : data?.comments || [];
     } catch (error) {
@@ -105,8 +65,8 @@ class ClickUpService {
 
   async postTaskComment(taskId, commentText) {
     try {
-      const url = `${this.clickupBaseUrl}/task/${taskId}/comment${this.isCustomTaskId(taskId) ? '?custom_task_ids=true&team_id=8631005' : ''}`;
-      const data = await this.makeClickUpRequest(url, 'POST', { comment_text: commentText });
+      const url = `${this.clickupBaseUrl}/task/${taskId}/comment${this.isCustomTaskId(taskId) ? "?custom_task_ids=true&team_id=8631005" : ""}`;
+      const data = await this.makeClickUpRequest(url, "POST", { comment_text: commentText });
       return data;
     } catch (error) {
       console.error(`Error in postTaskComment`);
@@ -135,7 +95,7 @@ class ClickUpService {
     try {
       const prLinks = taskComments.flatMap(
         (comment) =>
-          comment.comment?.filter((item) => item.attributes?.link?.includes('github.com')).map((item) => item.attributes.link) || [],
+          comment.comment?.filter((item) => item.attributes?.link?.includes("github.com")).map((item) => item.attributes.link) || [],
       );
 
       return prLinks;
@@ -179,12 +139,12 @@ class ClickUpService {
     const subtaskCommentsPromise = Promise.all(subtaskIds.map((subtaskId) => this.getTaskComments(subtaskId)));
     const [subtaskDetails, subtaskComments] = await Promise.all([subtaskDetailsPromise, subtaskCommentsPromise]);
 
-    const taskCommentString = taskComments.reduce((result, comment) => result.concat(`${comment?.comment_text}\n`), '');
-    let subtaskDetailsString = 'Subtasks:\n';
+    const taskCommentString = taskComments.reduce((result, comment) => result.concat(`${comment?.comment_text}\n`), "");
+    let subtaskDetailsString = "Subtasks:\n";
     for (let idx = 0; idx < subtaskIds.length; idx++) {
       const subtaskDetail = subtaskDetails[idx];
       const subtaskComment = subtaskComments[idx];
-      const subtaskCommentString = subtaskComment.reduce((result, comment) => result.concat(`${comment?.comment_text}\n`), '');
+      const subtaskCommentString = subtaskComment.reduce((result, comment) => result.concat(`${comment?.comment_text}\n`), "");
 
       subtaskDetailsString += `
                 Subtask Title: ${subtaskDetail.title}
@@ -209,7 +169,7 @@ class ClickUpService {
   async getTaskDetailsV2(taskId, includeSubtasks = false) {
     try {
       // const _isCustomTaskId = isCustomTaskId(taskId)
-      const url = `${this.clickupBaseUrl}/task/${taskId}?include_subtasks=${includeSubtasks}${this.isCustomTaskId(taskId) ? '&custom_task_ids=true&team_id=8631005' : ''}`;
+      const url = `${this.clickupBaseUrl}/task/${taskId}?include_subtasks=${includeSubtasks}${this.isCustomTaskId(taskId) ? "&custom_task_ids=true&team_id=8631005" : ""}`;
       const data = await this.makeClickUpRequest(url);
       return data;
     } catch (error) {
@@ -221,11 +181,11 @@ class ClickUpService {
   async setCustomFields(taskId, customFieldKey, customFieldValue) {
     try {
       // https://api.clickup.com/api/v2/task/{task_id}/field/{field_id}
-      const url = `${this.clickupBaseUrl}/task/${taskId}/field/${customFieldKey}${this.isCustomTaskId(taskId) ? '?custom_task_ids=true&team_id=8631005' : ''}`;
+      const url = `${this.clickupBaseUrl}/task/${taskId}/field/${customFieldKey}${this.isCustomTaskId(taskId) ? "?custom_task_ids=true&team_id=8631005" : ""}`;
       const data = {
         value: customFieldValue,
       };
-      const response = await this.makeClickUpRequest(url, 'POST', data);
+      const response = await this.makeClickUpRequest(url, "POST", data);
       return response;
     } catch (error) {
       console.error(`Error in setCustomFields`);
@@ -235,8 +195,8 @@ class ClickUpService {
 
   async updateTask(taskId, data) {
     try {
-      const url = `${this.clickupBaseUrl}/task/${taskId}${this.isCustomTaskId(taskId) ? '?custom_task_ids=true&team_id=8631005' : ''}`;
-      const response = await this.makeClickUpRequest(url, 'PUT', data);
+      const url = `${this.clickupBaseUrl}/task/${taskId}${this.isCustomTaskId(taskId) ? "?custom_task_ids=true&team_id=8631005" : ""}`;
+      const response = await this.makeClickUpRequest(url, "PUT", data);
       return response;
     } catch (error) {
       console.error(`Error in updateTask`);
@@ -258,7 +218,7 @@ class ClickUpService {
   async createTask(listId, data) {
     try {
       const url = `${this.clickupBaseUrl}/list/${listId}/task`;
-      const response = await this.makeClickUpRequest(url, 'POST', data);
+      const response = await this.makeClickUpRequest(url, "POST", data);
       return response;
     } catch (error) {
       console.error(`Error in createTask`);
@@ -293,8 +253,8 @@ class ClickUpService {
 
   async addTaskToList(taskId, listId) {
     try {
-      const url = `${this.clickupBaseUrl}/list/${listId}/task/${taskId}${this.isCustomTaskId(taskId) ? '?custom_task_ids=true&team_id=8631005' : ''}`;
-      const response = await this.makeClickUpRequest(url, 'POST');
+      const url = `${this.clickupBaseUrl}/list/${listId}/task/${taskId}${this.isCustomTaskId(taskId) ? "?custom_task_ids=true&team_id=8631005" : ""}`;
+      const response = await this.makeClickUpRequest(url, "POST");
       return response;
     } catch (error) {
       console.error(`Error in addTaskToList`);
@@ -304,8 +264,8 @@ class ClickUpService {
 
   async addTagToTask(taskId, tagId) {
     try {
-      const url = `${this.clickupBaseUrl}/task/${taskId}/tag/${tagId}${this.isCustomTaskId(taskId) ? '?custom_task_ids=true&team_id=8631005' : ''}`;
-      const response = await this.makeClickUpRequest(url, 'POST');
+      const url = `${this.clickupBaseUrl}/task/${taskId}/tag/${tagId}${this.isCustomTaskId(taskId) ? "?custom_task_ids=true&team_id=8631005" : ""}`;
+      const response = await this.makeClickUpRequest(url, "POST");
       return response;
     } catch (error) {
       console.error(`Error in addTagToTask`);
@@ -313,7 +273,7 @@ class ClickUpService {
     }
   }
 
-  async fetchTasksByListId(listId, excludeStories = false) {
+  async fetchTasksByListId({ listId, excludeStories = false, statuses = this.statuses }) {
     let page = 0;
     let allTasks = [];
     let hasMoreTasks = true;
@@ -321,16 +281,18 @@ class ClickUpService {
 
     while (hasMoreTasks) {
       // this API has a defaukt limit of 100 tasks per page
-      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${this.statuses.map((status) => `statuses=${status}`).join('&')}&page=${page}`;
+      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${statuses.map((status) => `statuses=${status}`).join("&")}&${this.assignees.map((assignee) => `assignees=${assignee}`).join("&")}&page=${page}`;
 
+      console.log({ url });
       try {
         const response = await this.makeClickUpRequest(url);
         const tasks = response.tasks || [];
         allTasks = allTasks.concat(tasks);
         hasMoreTasks = tasks.length === limit; // If the number of tasks is less than the limit, we've fetched all tasks
         page += 1;
+        console.log({ hasMoreTasks, page });
       } catch (error) {
-        console.error('Failed to fetch ClickUp tasks:', error.response ? error.response.data : error.message);
+        console.error("Failed to fetch ClickUp tasks:", error.response ? error.response.data : error.message);
         hasMoreTasks = false;
       }
     }
@@ -347,15 +309,15 @@ class ClickUpService {
     const MS_PER_DAY = 24 * 60 * 60 * 1000;
     const sprintLength = 14; // in days
     const halfSprint = 7; // in days
-    const sprintStart = new Date('2025-01-29T00:00:00Z'); // Reference Wednesday
-  
+    const sprintStart = new Date("2025-01-29T00:00:00Z"); // Reference Wednesday
+
     // Find how many days since the sprintStart
     const daysSinceStart = Math.floor((currentDate - sprintStart) / MS_PER_DAY);
     const daysIntoCurrentSprint = daysSinceStart % sprintLength;
     const sprintNumber = Math.floor(daysSinceStart / sprintLength);
-    
+
     let rangeStart, rangeEnd, phase;
-  
+
     if (daysIntoCurrentSprint < halfSprint) {
       // In the first half: return last half of previous sprint
       rangeStart = new Date(sprintStart.getTime() + (sprintNumber - 1) * sprintLength * MS_PER_DAY + halfSprint * MS_PER_DAY);
@@ -367,13 +329,13 @@ class ClickUpService {
       rangeEnd = new Date(rangeStart.getTime() + (halfSprint - 1) * MS_PER_DAY);
       phase = 1;
     }
-  
+
     return {
       startDate: new Date(rangeStart.setHours(0, 0, 0, 0)),
       endDate: new Date(rangeEnd.setHours(23, 59, 59, 999)),
       phase,
     };
-  }  
+  }
 
   getPreviousAndCurrentSprint(sprints) {
     const now = Date.now();
@@ -414,38 +376,38 @@ class ClickUpService {
     const taskMap = {};
 
     tasks.forEach((task) => {
-      taskMap[task.id] = {...(taskMap[task.id] || {}), ...task};
+      taskMap[task.id] = { ...(taskMap[task.id] || {}), ...task };
 
       if (task.parent) {
-        const parentTask = taskMap[task.parent] || {}
-        parentTask.subtaskIds = parentTask.subtaskIds || []
-        parentTask.subtaskIds.push(task.id)
-        taskMap[task.parent] = parentTask
+        const parentTask = taskMap[task.parent] || {};
+        parentTask.subtaskIds = parentTask.subtaskIds || [];
+        parentTask.subtaskIds.push(task.id);
+        taskMap[task.parent] = parentTask;
       }
     });
 
     tasks.forEach((task) => {
-      const _isTaskClosed = this.closedStatuses.includes(task.status?.status)
-      const _closedDate = new Date(parseInt(task.date_closed || task.date_done))
-      const _isTaskInTimeRange = _closedDate >= startDate && _closedDate <= endDate
-      const _isParentTask = !task.parent
-      const _isParentTaskPresentInList = task.parent && taskMap[task.parent]?.id
-      const _isParentTaskClosed = _isParentTaskPresentInList && this.closedStatuses.includes(taskMap[task.parent]?.status?.status)
-      const _isGettingCarriedOver = task.tags.find((tag) => tag.name === 'spillover-trigger')
+      const _isTaskClosed = this.closedStatuses.includes(task.status?.status);
+      const _closedDate = new Date(parseInt(task.date_closed || task.date_done));
+      const _isTaskInTimeRange = _closedDate >= startDate && _closedDate <= endDate;
+      const _isParentTask = !task.parent;
+      const _isParentTaskPresentInList = task.parent && taskMap[task.parent]?.id;
+      const _isParentTaskClosed = _isParentTaskPresentInList && this.closedStatuses.includes(taskMap[task.parent]?.status?.status);
+      const _isGettingCarriedOver = task.tags.find((tag) => tag.name === "spillover-trigger");
 
       // if (task.id === '86cxreaym') {
       //   console.log({ tags: task.tags })
       //   console.log(`\nname: ${task.name}, _isTaskClosed: ${_isTaskClosed}, startDate: ${startDate}, endDate: ${endDate}, _closedDate: ${_closedDate}, _isTaskInTimeRange: ${_isTaskInTimeRange}, taskParent: ${task.parent}, _isParentTask: ${_isParentTask}, _isParentTaskPresentInList: ${_isParentTaskPresentInList}, _isParentTaskClosed: ${_isParentTaskClosed}, _isGettingCarriedOver: ${_isGettingCarriedOver}`)
       // }
 
-      let _shouldProcessTask = false
-      if(_isTaskClosed && _isTaskInTimeRange && _isParentTask && !_isGettingCarriedOver) {
+      let _shouldProcessTask = false;
+      if (_isTaskClosed && _isTaskInTimeRange && _isParentTask && !_isGettingCarriedOver) {
         // process parent task
-        _shouldProcessTask = true
+        _shouldProcessTask = true;
       } else if (_isTaskClosed && _isTaskInTimeRange && !_isParentTask && !_isParentTaskPresentInList && !_isGettingCarriedOver) {
         // process task if it is not a parent task and it's parent task is not in the list
-        _shouldProcessTask = true
-      } 
+        _shouldProcessTask = true;
+      }
       // else if (_isTaskClosed && _isTaskInTimeRange && !_isParentTask && _isParentTaskPresentInList && _isParentTaskClosed) {
       //   // process task if it is not a parent task, it's parent task is in the list and it's parent task is closed
       //   _shouldProcessTask = true
@@ -454,27 +416,29 @@ class ClickUpService {
       if (_shouldProcessTask) {
         const name = task.name;
 
-        const taskAssignees = task.assignees?.map((assignee) => assignee.username) || []
-        const subtaskIds = taskMap[task.id]?.subtaskIds || []
-        const subtaskAssignees = subtaskIds.map((subtaskId) => taskMap[subtaskId].assignees[0]?.username)
-        const assignees = [...new Set([...taskAssignees, ...subtaskAssignees])]
-        
+        const taskAssignees = task.assignees?.map((assignee) => assignee.username) || [];
+        const subtaskIds = taskMap[task.id]?.subtaskIds || [];
+        const subtaskAssignees = subtaskIds.map((subtaskId) => taskMap[subtaskId].assignees[0]?.username);
+        const assignees = [...new Set([...taskAssignees, ...subtaskAssignees])];
+
         const categoryValueIdx = task.custom_fields.find(
-          (field) => field.id === this.clickupHelper.getCustomFieldId(task.custom_fields, '📖 Category'),
+          (field) => field.id === this.clickupHelper.getCustomFieldId(task.custom_fields, "📖 Category"),
         )?.value;
-        let category = this.clickupHelper.getCustomFieldOptionValue(task.custom_fields, '📖 Category', categoryValueIdx) || 'Other';
+        let category = this.clickupHelper.getCustomFieldOptionValue(task.custom_fields, "📖 Category", categoryValueIdx) || "Other";
 
         // Find if the task is a support ticket
-        if (category === 'Other') {
-          const _isSupportTicketTagPresent = task.tags.find((tag) => tag.name === 'support production ticket')
-          const _categoryCustomFieldId = this.clickupHelper.getCustomFieldId(task.custom_fields, 'Category')
-          const _categoryCustomFieldValueIdx = task.custom_fields.find(
-            (field) => field.id === _categoryCustomFieldId,
-          )?.value;
-          const _categoryCustomFieldValue = this.clickupHelper.getCustomFieldOptionValue(task.custom_fields, 'Category', _categoryCustomFieldValueIdx)
-          const _isSupportTicketCustomFieldPresent = _categoryCustomFieldValue === 'Support Production Tickets'
+        if (category === "Other") {
+          const _isSupportTicketTagPresent = task.tags.find((tag) => tag.name === "support production ticket");
+          const _categoryCustomFieldId = this.clickupHelper.getCustomFieldId(task.custom_fields, "Category");
+          const _categoryCustomFieldValueIdx = task.custom_fields.find((field) => field.id === _categoryCustomFieldId)?.value;
+          const _categoryCustomFieldValue = this.clickupHelper.getCustomFieldOptionValue(
+            task.custom_fields,
+            "Category",
+            _categoryCustomFieldValueIdx,
+          );
+          const _isSupportTicketCustomFieldPresent = _categoryCustomFieldValue === "Support Production Tickets";
 
-          category = _isSupportTicketTagPresent || _isSupportTicketCustomFieldPresent ? 'Support Tickets' : 'Other';
+          category = _isSupportTicketTagPresent || _isSupportTicketCustomFieldPresent ? "Support Tickets" : "Other";
         }
 
         if (!summary[category]) {
@@ -526,7 +490,7 @@ class ClickUpService {
     const url = `${this.clickupBaseUrl}/folder/${this.CLICKUP_SPRINT_FOLDER_ID}/list`;
     const response = await axios.get(url, { headers: this.headers });
     return response.data.lists;
-}
+  }
 
   async fetchCurrentSprint() {
     const lists = await this.fetchLists();
@@ -535,9 +499,9 @@ class ClickUpService {
     return current.id;
   }
 
-  async summarizeTasksByAssignee(listId) {
+  async summarizeTasksForStandup(listId) {
     console.log("Fetching tasks for list:", listId);
-    const tasks = await this.fetchTasksByListId(listId, true);
+    const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses: this.standupStatuses });
     if (!tasks) {
       console.log("No tasks found");
       return null;
@@ -551,24 +515,22 @@ class ClickUpService {
       if (!task.assignees || !Array.isArray(task.assignees)) return;
 
       task.assignees.forEach((assignee) => {
-        const assigneeName = assignee.username;
+        const assigneeEmail = assignee.email;
 
-        if (!summary[assigneeName]) {
-          summary[assigneeName] = {
+        if (!summary[assigneeEmail]) {
+          summary[assigneeEmail] = {
             tasks: [],
           };
         }
 
-        if (!this.closedStatuses.includes(task.status?.status)) {
-          summary[assigneeName].tasks.push({
-            id: task.id,
-            name: task.name,
-            status: task.status?.status || "No Status",
-            url: task.url,
-            points: task.points,
-            due_date: task.due_date,
-          });
-        }
+        summary[assigneeEmail].tasks.push({
+          id: task.id,
+          name: task.name,
+          status: task.status?.status || "No Status",
+          url: task.url,
+          points: task.points,
+          due_date: task.due_date,
+        });
       });
     };
 

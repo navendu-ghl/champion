@@ -1,11 +1,168 @@
 {
     "automation-calendars": {
-        "calendar-internal": "C077A0PDR8X",
-        "navendu.duari@gohighlevel.com": "U04LW77KCBD",
-        "devangi.naliyadhara@gohighlevel.com": "U07H59XPV43"
+        "internalChannel": "C077A0PDR8X",
+        "reviewer": "U04LW77KCBD",
+        "userGroup": "S03T400DNN5",
+        "members": {
+            "anand@gohighlevel.com": {
+                "name": "Anand Kumar",
+                "slackId": "U02DDM2FC69"
+            },
+            "bhavana.gupta@gohighlevel.com": {
+                "name": "Bhavana Gupta",
+                "slackId": "U05EYAUD97X"
+            },
+            "lidhish.c@gohighlevel.com": {
+                "name": "Lidhish C",
+                "slackId": "U060QCCTL64"
+            },
+            "navendu.duari@gohighlevel.com": {
+                "name": "Navendu Duari",
+                "slackId": "U04LW77KCBD"
+            },
+            "sarthak.saxena@gohighlevel.com": {
+                "name": "Sarthak Saxena",
+                "slackId": "U08G3EJ7YL8"
+            },
+            "tarun.agarwal@gohighlevel.com": {
+                "name": "Tarun Agarwal",
+                "slackId": "U08C6PFKBHQ"
+            },
+            "ujjaval.moradiya@gohighlevel.com": {
+                "name": "Ujjaval Moradiya",
+                "slackId": "U05HS20UQD6"
+            },
+            "ajay.yerra@gohighlevel.com": {
+                "name": "Ajay Yerra",
+                "slackId": "U056G3473G9"
+            },
+            "raghav.deshpande@gohighlevel.com": {
+                "name": "Raghav Deshpande",
+                "slackId": "U05GATN1ZAM"
+            },
+            "devangi.naliyadhara@gohighlevel.com": {
+                "name": "Devangi Naliyadhara",
+                "slackId": "U07H59XPV43"
+            },
+            "dhananjay.waghade@gohighlevel.com": {
+                "name": "Dhananjay Waghade",
+                "slackId": "U071W6X518Q"
+            },
+            "suvodip.mondal@gohighlevel.com": {
+                "name": "Suvodip Mondal",
+                "slackId": "U07HJ38KUHX"
+            },
+            "lavish@gohighlevel.com": {
+                "name": "Lavish",
+                "slackId": "U03U00BPMC5"
+            },
+            "ashish.ahuja@gohighlevel.com": {
+                "name": "Ashish Ahuja",
+                "slackId": "U05KASZT6P2"
+            },
+            "nikhil.kumar@gohighlevel.com": {
+                "name": "Nikhil Kumar",
+                "slackId": "U08G3EDNR4Y"
+            },
+            "ankit@gohighlevel.com": {
+                "name": "Ankit",
+                "slackId": "U03UXFXFNHW"
+            },
+            "prabal.sharma@gohighlevel.com": {
+                "name": "Prabal Sharma",
+                "slackId": "U06RZA9J5ME"
+            },
+            "swadha.bhoj@gohighlevel.com": {
+                "name": "Swadha Bhoj",
+                "slackId": "U05R748ELTE"
+            }
+          }
     },
     "mobile": {
-        "smit.sonani@gohighlevel.com": "U04SYPXRXQ9",
-        "mobile-internal": null
+        "internalChannel": null,
+        "reviewer": "U04LW77KCBD",
+        "userGroup": "S01DP01CYHG",
+        "members": {
+            "smit.sonani@gohighlevel.com": {
+                "name": "Smit Sonani",
+                "slackId": "U04SYPXRXQ9"
+            },
+            "amit.kumar@gohighlevel.com": {
+                "name": "Amit Kumar",
+                "slackId": "U04LZMLUUU8"
+            },
+            "biswajit@gohighlevel.com": {
+                "name": "Biswajit",
+                "slackId": "U043WF329DL"
+            },
+            "paterson.selvakumar@gohighlevel.com": {
+                "name": "Paterson Selvakumar",
+                "slackId": "U079T0EUX2M"
+            },
+            "dhruv.sirodaria@gohighlevel.com": {
+                "name": "Dhruv Sirodaria",
+                "slackId": "U07P70M45K7"
+            },
+            "dinesh.parmar@gohighlevel.com": {
+                "name": "Dinesh Parmar",
+                "slackId": "U06U05E662K"
+            },
+            "jaldeep@gohighlevel.com": {
+                "name": "Jaldeep",
+                "slackId": "U022TLK0VS6"
+            },
+            "kislay.raj@gohighlevel.com": {
+                "name": "Kislay Raj",
+                "slackId": "U0839CXFAQY"
+            },
+            "milind@gohighlevel.com": {
+                "name": "Milind",
+                "slackId": "U03TJQ2HEJ1"
+            },
+            "nikhil.siddasamudra@gohighlevel.com": {
+                "name": "Nikhil Siddasamudra",
+                "slackId": "U07TF2NE89Z"
+            },
+            "nitish.krishna@gohighlevel.com": {
+                "name": "Nitish Krishna",
+                "slackId": "U07L5H56KEX"
+            },
+            "rajat.kamleshwar@gohighlevel.com": {
+                "name": "Rajat Kamleshwar",
+                "slackId": "U08J8QQFK7A"
+            },
+            "sahdeep@gohighlevel.com": {
+                "name": "Sahdeep",
+                "slackId": "U01PNDM8GRY"
+            },
+            "shubham.soni@gohighlevel.com": {
+                "name": "Shubham Soni",
+                "slackId": "U04Q05BPXF0"
+            },
+            "sonu.sharma@gohighlevel.com": {
+                "name": "Sonu Sharma",
+                "slackId": "U08NQGECYA1"
+            },
+            "srinidhi.nagabhushan@gohighlevel.com": {
+                "name": "Srinidhi Nagabhushan",
+                "slackId": "U05TTCXT7LL"
+            },
+            "srujan.mhase@gohighlevel.com": {
+                "name": "Srujan Mhase",
+                "slackId": "U060R1EAUBX"
+            },
+            "urvash.singh@gohighlevel.com": {
+                "name": "Urvash Singh",
+                "slackId": "U0627ME31AR"
+            },
+            "yashvardhan.awasthi@gohighlevel.com": {
+                "name": "Yashvardhan Awasthi",
+                "slackId": "U08GM4RHZHB"
+            },
+            "yukta.tn@gohighlevel.com": {
+                "name": "Yukta TN",
+                "slackId": "U07QKCLTGEQ"
+            }
+        }
     }
 }
