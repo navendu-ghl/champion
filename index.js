@@ -39,7 +39,7 @@ async function handleTaskAutomation(req, res) {
         const context = new TaskAutomationContext(task);
         const results = await runAutomation(context, action);
         console.log(results);
-        res.send(`Automation run successfully`);
+        res.status(200).send(`Automation run successfully`);
         return;
     } catch (error) {
         console.error('Error running task automation:', error.message);
@@ -48,11 +48,16 @@ async function handleTaskAutomation(req, res) {
     }
 }
 
+// TODO: return 
 async function handleGeneralAutomation(req, res) {
     const action = req.query.action;
     const mode = req.query.mode;
     const config = generalAutomationConfig;
-    config.postWeeklyReleaseDigest.then.data.mode = mode || 'review';
+
+    Object.values(config).forEach(automation => {
+        automation.then.data.mode = mode || 'review';
+    });
+
     if (!action) {
         console.error("Action is required for general automation");
         return;
@@ -63,7 +68,7 @@ async function handleGeneralAutomation(req, res) {
         return runAutomation(context, action);
     } catch (error) {
         console.error('Error running general automation:', error.message);
-        throw error;
+        return;
     }
 }
 

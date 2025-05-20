@@ -548,7 +548,6 @@ class ClickUpService {
 
     // Helper function to process a single task
     const processTask = (task) => {
-      console.log({ taskName: task.name, status: task.status?.status });
       if (!task.assignees || !Array.isArray(task.assignees)) return;
 
       task.assignees.forEach((assignee) => {

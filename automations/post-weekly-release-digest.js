@@ -1,18 +1,14 @@
 const AutomationBase = require("../automation-base");
 const ClickUpService = require("../services/clickupService");
 const SlackService = require("../services/slackService");
+
+const slackData = require("../data/slack.json");
 class PostWeeklyReleaseDigestAutomation extends AutomationBase {
   constructor(config) {
     super(config);
     this.name = config.name;
     this.clickupService = new ClickUpService();
     this.slackService = new SlackService();
-    this.channelIds = {
-      'calendar-internal': 'C077A0PDR8X'
-    }
-    this.userIds = {
-      'navendu.duari@gmail.com': 'U04LW77KCBD'
-    }
   }
 
   async run(context) {
@@ -62,7 +58,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
   async sendReleaseDigestForReview(messages) {
     try {
-      const channelId = await this.slackService.openDmChannel(this.userIds['navendu.duari@gmail.com']);
+      const channelId = await this.slackService.openDmChannel(slackData.automation.calendars['navendu.duari@gohighlevel.com']);
       const response = await this.slackService.postMessage({ message: messages[0], channelId });
       if (response.ok && response.ts) {
           for (let i = 1; i < messages.length; i++) {
@@ -80,7 +76,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
   async publishReleaseDigest(messages) {
     try {
-      const channelId = this.channelIds['calendar-internal'];
+      const channelId = slackData.automation.calendars['calendar-internal'];
       
       const response = await this.slackService.postMessage({ message: messages[0], channelId });
       if (response.ok && response.ts) {
