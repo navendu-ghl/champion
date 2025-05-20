@@ -9,6 +9,8 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
     this.name = config.name;
     this.clickupService = new ClickUpService();
     this.slackService = new SlackService();
+    this.mode = config.postWeeklyReleaseDigest.then.data.mode || 'review';
+    this.team = config.postWeeklyReleaseDigest.then.data.team;
   }
 
   async run(context) {
@@ -19,8 +21,6 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
       if (!isCorrectAutomation) {
         throw new Error("Not configured to run post-weekly-release-digest");
       }
-
-      const mode = context.getConfig().postWeeklyReleaseDigest.then.data.mode || 'review';
 
       // if sprintPhase is start, then post the digest for the last 7 days from the previous sprint list
       // if sprintPhase is mid, then post the digest for the last 7 days from the current sprint list
@@ -43,7 +43,7 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
       if (mode === 'publish') {
         console.log('Publishing release digest')
-        // await this.publishReleaseDigest(messages);
+        await this.publishReleaseDigest(messages);
       } else if (mode === 'review') {
         console.log('Sending release digest for review')
         await this.sendReleaseDigestForReview(messages);
@@ -58,7 +58,16 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
   async sendReleaseDigestForReview(messages) {
     try {
-      const channelId = await this.slackService.openDmChannel(slackData.automation.calendars['navendu.duari@gohighlevel.com']);
+      let userId
+      if (this.team === 'automation-calendars') {
+        userId = slackData['automation-calendars']['navendu.duari@gohighlevel.com'];
+      } else if (this.team === 'mobile') {
+        userId = slackData.mobile['smit.sonani@gohighlevel.com'];
+      }
+      if (!userId) {
+        throw new Error("sendReleaseDigestForReview: User ID not found");
+      }
+      const channelId = await this.slackService.openDmChannel(userId);
       const response = await this.slackService.postMessage({ message: messages[0], channelId });
       if (response.ok && response.ts) {
           for (let i = 1; i < messages.length; i++) {
@@ -76,7 +85,15 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
 
   async publishReleaseDigest(messages) {
     try {
-      const channelId = slackData.automation.calendars['calendar-internal'];
+      let channelId
+      if (this.team === 'automation-calendars') {
+        channelId = slackData['automation-calendars']['calendar-internal'];
+      } else if (this.team === 'mobile') {
+        channelId = slackData.mobile['mobile-internal'];
+      }
+      if (!channelId) {
+        throw new Error("publishReleaseDigest: Channel ID not found");
+      }
       
       const response = await this.slackService.postMessage({ message: messages[0], channelId });
       if (response.ok && response.ts) {

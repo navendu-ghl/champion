@@ -51,15 +51,17 @@ async function handleTaskAutomation(req, res) {
 // TODO: return 
 async function handleGeneralAutomation(req, res) {
     const action = req.query.action;
+    const team = req.query.team;
     const mode = req.query.mode;
     const config = generalAutomationConfig;
 
     Object.values(config).forEach(automation => {
         automation.then.data.mode = mode || 'review';
+        automation.then.data.team = team;
     });
 
-    if (!action) {
-        console.error("Action is required for general automation");
+    if (!action || !team) {
+        console.error("Action and team are required for general automation");
         return;
     }
 

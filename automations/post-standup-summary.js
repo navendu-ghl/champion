@@ -9,6 +9,8 @@ class PostStandupSummaryAutomation extends AutomationBase {
     this.name = config.name;
     this.clickupService = new ClickUpService();
     this.slackService = new SlackService();
+    this.team = config.postStandupSummary.then.data.team;
+    this.mode = config.postStandupSummary.then.data.mode;
   }
 
   async run(context) {
@@ -19,8 +21,6 @@ class PostStandupSummaryAutomation extends AutomationBase {
         throw new Error("Not configured to run post-standup-summary");
       }
 
-      const mode = context.getConfig().postStandupSummary.then.data.mode || 'review';
-
       // Get task summary from ClickUp
       const currentSprintId = await this.clickupService.fetchCurrentSprint();
       console.log({ currentSprintId });
@@ -29,10 +29,10 @@ class PostStandupSummaryAutomation extends AutomationBase {
       const parentMessage = this.slackService.getStandupSummaryParentMessage();
       const messages = this.slackService.formatStandupSummaryForSlack(summary);
 
-      if (mode === 'publish') {
+      if (this.mode === 'publish') {
         console.log('Publishing standup summary')
-        // await this.publishStandupSummary(messages);
-      } else if (mode === 'review') {
+        await this.publishStandupSummary(messages);
+      } else if (this.mode === 'review') {
         console.log('Sending standup summary for review')
         await this.sendStandupSummaryForReview({ parentMessage, messages });
       }
@@ -46,8 +46,17 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
   async sendStandupSummaryForReview({ parentMessage, messages }) {
     try {
-      const channelId = await this.slackService.openDmChannel(slackData.automation.calendars['navendu.duari@gohighlevel.com']);
-      console.log({ userId:slackData.automation.calendars['navendu.duari@gohighlevel.com'], channelId });
+      let userId
+      if (this.team === 'automation-calendars') {
+        userId = slackData['automation-calendars']['navendu.duari@gohighlevel.com'];
+      } else if (this.team === 'mobile') {
+        userId = slackData.mobile['smit.sonani@gohighlevel.com'];
+      }
+      if (!userId) {
+        throw new Error("sendStandupSummaryForReview: User ID not found");
+      }
+      const channelId = await this.slackService.openDmChannel(userId);
+      console.log({ userId, channelId });
       const response = await this.slackService.postMessage({ message: parentMessage, channelId });
       if (response.ok && response.ts) {
       for (const message of messages) {
@@ -62,7 +71,15 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
   async publishStandupSummary({ parentMessage, messages }) {
     try {
-      const channelId = slackData.automation.calendars['calendar-internal'];
+      let channelId
+      if (this.team === 'automation-calendars') {
+        channelId = slackData['automation-calendars']['calendar-internal'];
+      } else if (this.team === 'mobile') {
+        channelId = slackData.mobile['mobile-internal'];
+      }
+      if (!channelId) {
+        throw new Error("publishStandupSummary: Channel ID not found");
+      }
       const response = await this.slackService.postMessage({ message: parentMessage, channelId });
       if (response.ok && response.ts) {
         for (const message of messages) {
