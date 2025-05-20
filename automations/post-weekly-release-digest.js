@@ -9,8 +9,8 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
     this.name = config.name;
     this.clickupService = new ClickUpService();
     this.slackService = new SlackService();
-    this.mode = config.postWeeklyReleaseDigest.then.data.mode || 'review';
-    this.team = config.postWeeklyReleaseDigest.then.data.team;
+    this.mode = config.then.data.mode || 'review';
+    this.team = config.then.data.team;
   }
 
   async run(context) {

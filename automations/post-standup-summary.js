@@ -9,8 +9,8 @@ class PostStandupSummaryAutomation extends AutomationBase {
     this.name = config.name;
     this.clickupService = new ClickUpService();
     this.slackService = new SlackService();
-    this.team = config.postStandupSummary.then.data.team;
-    this.mode = config.postStandupSummary.then.data.mode;
+    this.team = config.then.data.team;
+    this.mode = config.then.data.mode;
   }
 
   async run(context) {
