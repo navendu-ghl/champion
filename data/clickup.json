@@ -95,7 +95,6 @@
             "jaldeep@gohighlevel.com",
             "kislay.raj@gohighlevel.com",
             "milind@gohighlevel.com",
-            "nikhil.siddasamudra@gohighlevel.com",
             "nitish.krishna@gohighlevel.com",
             "rajat.kamleshwar@gohighlevel.com",
             "sahdeep@gohighlevel.com",
@@ -103,7 +102,6 @@
             "sonu.sharma@gohighlevel.com",
             "srinidhi.nagabhushan@gohighlevel.com",
             "srujan.mhase@gohighlevel.com",
-            "urvash.singh@gohighlevel.com",
             "yashvardhan.awasthi@gohighlevel.com",
             "yukta.tn@gohighlevel.com"
         ],
@@ -127,16 +125,12 @@
             "Closed"
         ],
         "standupStatuses": [
-            "todo",
             "blocked",
             "qa fail",
             "in development",
-            "development done",
             "awaiting qa",
             "in qa",
-            "in dev review",
-            "qa pass",
-            "pr merged to dev"
+            "qa pass"
         ],
         "closedStatuses": [
             "Closed"

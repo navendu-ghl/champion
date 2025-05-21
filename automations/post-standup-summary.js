@@ -31,7 +31,7 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
       if (this.mode === 'publish') {
         console.log('Publishing standup summary')
-        await this.publishStandupSummary(messages);
+        await this.publishStandupSummary({ parentMessage, messages });
       } else if (this.mode === 'review') {
         console.log('Sending standup summary for review')
         await this.sendStandupSummaryForReview({ parentMessage, messages });
