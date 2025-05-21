@@ -416,9 +416,9 @@ class ClickUpService {
       if (_shouldProcessTask) {
         const name = task.name;
 
-        const taskAssignees = task.assignees?.map((assignee) => assignee.username) || [];
+        const taskAssignees = task.assignees?.map((assignee) => assignee.email) || [];
         const subtaskIds = taskMap[task.id]?.subtaskIds || [];
-        const subtaskAssignees = subtaskIds.map((subtaskId) => taskMap[subtaskId].assignees[0]?.username);
+        const subtaskAssignees = subtaskIds.map((subtaskId) => taskMap[subtaskId].assignees[0]?.email);
         const assignees = [...new Set([...taskAssignees, ...subtaskAssignees])];
 
         const categoryValueIdx = task.custom_fields.find(

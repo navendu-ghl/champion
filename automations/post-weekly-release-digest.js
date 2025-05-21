@@ -7,10 +7,11 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
   constructor(config) {
     super(config);
     this.name = config.name;
-    this.clickupService = new ClickUpService();
-    this.slackService = new SlackService();
     this.mode = config.then.data.mode || 'review';
     this.team = config.then.data.team;
+    this.clickupService = new ClickUpService({ team: this.team });
+    this.slackService = new SlackService({ team: this.team });
+  
   }
 
   async run(context) {
@@ -41,10 +42,10 @@ class PostWeeklyReleaseDigestAutomation extends AutomationBase {
       const summary = this.clickupService.summarizeTasksForReleaseDigest({ tasks, startDate, endDate });
       const messages = this.slackService.formatReleaseDigestMessages({ summary, startDate, endDate });
 
-      if (mode === 'publish') {
+      if (this.mode === 'publish') {
         console.log('Publishing release digest')
         await this.publishReleaseDigest(messages);
-      } else if (mode === 'review') {
+      } else if (this.mode === 'review') {
         console.log('Sending release digest for review')
         await this.sendReleaseDigestForReview(messages);
       }
