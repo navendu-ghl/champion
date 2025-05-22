@@ -382,6 +382,7 @@ class SlackService {
   }
 
   getStandupSummaryParentMessage() {
+    const keepSilent = this.team === 'mobile';
     const date = new Date().toLocaleDateString("en-GB");
 
     const parentMessage = {
@@ -395,7 +396,7 @@ class SlackService {
             emoji: true,
           },
         },
-        {
+         ...(!keepSilent ? [{
           type: "context",
           elements: [
             {
@@ -403,7 +404,7 @@ class SlackService {
               text: `<!subteam^${this.slackData.userGroup}>`,
             },
           ],
-        },
+        }]: []),
       ],
     };
     return parentMessage;
@@ -417,6 +418,8 @@ class SlackService {
 
     Object.entries(summary).forEach(([assigneeEmail, data]) => {
       const assignee = this.slackData.members[assigneeEmail]?.name;
+      if (!assignee) return;
+
       const message = {
         text: `Task Summary for ${assignee}`,
         blocks: [
