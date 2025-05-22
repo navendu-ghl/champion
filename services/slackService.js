@@ -57,10 +57,10 @@ class SlackService {
     if (!summary) return ['No tasks found.'];
 
     const messages = [];
-    const date = new Date().toLocaleDateString();
+    const MAX_BLOCKS = 50;
 
     Object.entries(summary).forEach(([assignee, data]) => {
-      const message = {
+      let currentMessage = {
         text: `Task Summary for ${assignee}`,
         blocks: [
           {
@@ -84,35 +84,61 @@ class SlackService {
       };
 
       data.tasks.forEach((task) => {
+        const taskBlocks = [];
         const dueDate = task.due_date ? new Date(parseInt(task.due_date)).toLocaleDateString('en-GB') : 'No due date';
         const points = task.points || 0;
         const status = task.status;
-        message.blocks.push(
-          ...[
-            {
-              type: 'section',
-              text: {
+        
+        taskBlocks.push(
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `• ${task.name}`,
+            },
+          },
+          {
+            type: 'context',
+            elements: [
+              {
                 type: 'mrkdwn',
-                text: `• ${task.name}`,
+                text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
               },
-            },
-            {
-              type: 'context',
-              elements: [
-                {
-                  type: 'mrkdwn',
-                  text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
-                },
-              ],
-            },
-          ],
+            ],
+          }
         );
+
+        // Check if adding task blocks would exceed limit
+        if (currentMessage.blocks.length + taskBlocks.length > MAX_BLOCKS) {
+          currentMessage.blocks.push({
+            type: 'divider',
+          });
+          messages.push(currentMessage);
+          
+          // Start a new message for the same assignee
+          currentMessage = {
+            text: `Task Summary for ${assignee} (Continued)`,
+            blocks: [
+              {
+                type: 'header',
+                text: {
+                  type: 'plain_text',
+                  text: `👤  ${assignee} (Continued)`,
+                  emoji: true,
+                },
+              },
+            ],
+          };
+        }
+
+        currentMessage.blocks.push(...taskBlocks);
       });
 
-      message.blocks.push({
+      // Add the final divider and push the last message
+      currentMessage.blocks.push({
         type: 'divider',
       });
-      messages.push(message);
+      messages.push(currentMessage);
     });
 
     return messages;
@@ -120,7 +146,10 @@ class SlackService {
 
   formatReleaseDigestMessages({ summary, startDate, endDate }) {
     const messages = [];
-    const parentMessage = {
+    const MAX_BLOCKS = 50;
+    
+    // Create header message
+    const headerMessage = {
       text: `📅 Weekly Release Digest`,
       blocks: [
         {
@@ -136,7 +165,7 @@ class SlackService {
           elements: [
             {
               type: 'mrkdwn',
-              text: `*Date Range:* ${startDate.toLocaleDateString('en-GB')} - ${endDate.toLocaleDateString('en-GB')}`, // dd/mm/yyyy - dd/mm/yyyy
+              text: `*Date Range:* ${startDate.toLocaleDateString('en-GB')} - ${endDate.toLocaleDateString('en-GB')}`,
             },
           ],
         },
@@ -145,61 +174,92 @@ class SlackService {
           "elements": [
               {
                   "type": "mrkdwn",
-                  "text": `<!subteam^${this.TEAM_CALENDAR_ID}>`
+                  "text": `<!subteam^${this.slackData.userGroup}>`
               }
           ]
         }
       ],
     };
-    messages.push(parentMessage);
-    const sortedSummary = Object.entries(summary).sort((a, b) => this.taskCategoryMap[a[0]].order - this.taskCategoryMap[b[0]].order);
-    sortedSummary.forEach(([category, data]) => {
-      const tasks = data.tasks;
-      // category title
-      const message = {
-        text: `${this.taskCategoryMap[category].emoji} ${this.taskCategoryMap[category].title}`,
-        blocks: [
-          {
-            type: 'divider',
-          },
-          {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `*${this.taskCategoryMap[category].emoji} ${this.taskCategoryMap[category].title}*`,
-            },
-          },
-        ],
-      };
-      
-      // tasks
-      tasks.forEach((task) => {
-        const _taskName = category === 'Other' ? `• ${task.name} - <${task.url}|Details>` : `• ${task.name}`
-        message.blocks.push(
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: _taskName,
-            },
-          },
-          ...(category === 'Other' ? [] : [
-            {
-              type: 'context',
-              elements: [
-                {
-                  type: 'mrkdwn',
-                  text: `Owner: ${task.assignees.map((assignee) => `<@${this.SLACK_MEMBER_IDS[assignee]}>`).join(', ')} | <${task.url}|Details>`,
-                },
-              ],
-            }
-          ])
-        );
-      });
-      messages.push(message);
-    });
+    messages.push(headerMessage);
 
-    // footer
+    // Process categories
+    const sortedSummary = Object.entries(summary).sort((a, b) => this.taskCategoryMap[a[0]].order - this.taskCategoryMap[b[0]].order);
+    
+    let currentMessage = {
+      blocks: [],
+      text: 'Release Digest Details'
+    };
+
+    for (const [category, data] of sortedSummary) {
+      const tasks = data.tasks;
+      const categoryBlocks = [
+        {
+          type: 'divider',
+        },
+        {
+          type: 'section',
+          text: {
+              type: 'mrkdwn',
+              text: `*${this.taskCategoryMap[category].emoji} ${this.taskCategoryMap[category].title}*`,
+          },
+        },
+      ];
+
+      // Check if adding category header would exceed limit
+      if (currentMessage.blocks.length + categoryBlocks.length > MAX_BLOCKS) {
+        messages.push(currentMessage);
+        currentMessage = {
+          blocks: [],
+          text: 'Release Digest Details (Continued)'
+        };
+      }
+      
+      currentMessage.blocks.push(...categoryBlocks);
+
+      // Process tasks
+      for (const task of tasks) {
+        const taskBlocks = [];
+        const _taskName = category === 'Other' ? `• ${task.name} - <${task.url}|Details>` : `• ${task.name}`;
+        
+        taskBlocks.push({
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: _taskName,
+          },
+        });
+
+        if (category !== 'Other') {
+          taskBlocks.push({
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `Owner: ${task.assignees.map((assignee) => `<@${this.slackData.members[assignee]?.slackId}>`).join(', ')} | <${task.url}|Details>`,
+              },
+            ],
+          });
+        }
+
+        // Check if adding task blocks would exceed limit
+        if (currentMessage.blocks.length + taskBlocks.length > MAX_BLOCKS) {
+          messages.push(currentMessage);
+          currentMessage = {
+            blocks: [],
+            text: 'Release Digest Details (Continued)'
+          };
+        }
+
+        currentMessage.blocks.push(...taskBlocks);
+      }
+    }
+
+    // Add the last message if it has any blocks
+    if (currentMessage.blocks.length > 0) {
+      messages.push(currentMessage);
+    }
+
+    // Add footer as separate message
     const footerMessage = {
       text: '🏁 Keep up the amazing work, team! 🚀',
       blocks: [
@@ -308,6 +368,7 @@ class SlackService {
       );
 
       if (!response.data.ok) {
+        console.log("posting message--->", JSON.stringify(_message));
         console.error('Slack API Error:', response.data.error);
         return null;
       } else {
