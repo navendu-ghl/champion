@@ -34,6 +34,7 @@ class HandleSpilloverTaskAutomation extends AutomationBase {
         parent: task.parent,
         customFields,
         custom_item_id: task.custom_item_id,
+        status: task.status.status,
       });
 
       console.log('Copying task comments');
@@ -57,6 +58,7 @@ class HandleSpilloverTaskAutomation extends AutomationBase {
             parent: duplicateTask.id,
             customFields,
             custom_item_id: subtask.custom_item_id,
+            status: subtask.status.status,
           });
           await this.clickupService.copyTaskComments(subtask.id, _duplicateSubtask.id);
 
