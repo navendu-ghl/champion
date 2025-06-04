@@ -5,6 +5,7 @@ const { TaskAutomationContext, GeneralAutomationContext } = require('./config/au
 const generalAutomationConfig = require('./config/general-automation-config');
 const express = require('express');
 const bodyParser = require('body-parser');
+const slackData = require('./data/slack.json');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,17 +85,18 @@ async function handleGeneralAutomation(req, res) {
 async function handleSlackInteraction(req, res) {
     const payload = JSON.parse(req.body.payload);
     const action = payload.actions?.[0];
-    // const user = payload.user.username;
+    const userId = payload.user.id;
+    const team = Object.entries(slackData).find(([_, value]) => value.reviewer === userId)[0];
     const actionId = action?.action_id;
 
     switch (actionId) {
         case 're-generate-release-digest':
             console.log("Re-generating release digest");
-            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'review' } });
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'review', team } });
             break;
         case 'publish-release-digest':
             console.log("Publishing release digest");
-            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'publish' } });
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'publish', team } });
             break;
     }
 
