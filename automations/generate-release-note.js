@@ -7,7 +7,8 @@ class GenerateReleaseNoteAutomation extends AutomationBase {
   constructor(config) {
     super(config);
     this.name = config.name;
-    this.clickupService = new ClickUpService();
+    this.team = config.then.data.team;
+    this.clickupService = new ClickUpService({ team: this.team });
     this.githubService = new GitHubService();
     this.openAIService = new OpenAIService();
   }

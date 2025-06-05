@@ -6,7 +6,8 @@ class HandleSpilloverTaskAutomation extends AutomationBase {
   constructor(config) {
     super(config);
     this.name = config.name;
-    this.clickupService = new ClickUpService();
+    this.team = config.then.data.team;
+    this.clickupService = new ClickUpService({ team: this.team });
   }
 
   async run(context) {
