@@ -25,20 +25,21 @@ app.listen(8080, () => {
 });
 
 async function handleTaskAutomation(req, res) {
-    const { taskId, action } = req.query;
+    const { taskId, action, team, mode } = req.query;
     // const taskId = '86cygabpu';
     // const action = 'create-sub-tasks';
-    if (!taskId || !action) {
-        console.error("Task ID and action are required for task automation");
-        res.status(400).send('Task ID and action are required for task automation');
+
+    if (!taskId || !action || !team) {
+        console.error("Task ID, action and team are required for task automation");
+        res.status(400).send('Task ID, action and team are required for task automation');
         return;
     }
 
     try {
-        const clickupService = new ClickUpService();
+        const clickupService = new ClickUpService({ team });
         const task = await clickupService.getTaskDetailsV2(taskId);
         const context = new TaskAutomationContext(task);
-        await runAutomation(context, action);
+        await runAutomation(context, action, { team, mode });
         res.status(200).send(`Automation run successfully`);
         return;
     } catch (error) {
@@ -54,12 +55,6 @@ async function handleGeneralAutomation(req, res) {
     const action = req.query.action;
     const team = req.query.team;
     const mode = req.query.mode;
-    const config = generalAutomationConfig;
-
-    Object.values(config).forEach(automation => {
-        automation.then.data.mode = mode || 'review';
-        automation.then.data.team = team;
-    });
 
     if (!action || !team) {
         console.error("Action and team are required for general automation");
@@ -67,8 +62,8 @@ async function handleGeneralAutomation(req, res) {
     }
 
     try {
-        const context = new GeneralAutomationContext(config);
-        await runAutomation(context, action);
+        const context = new GeneralAutomationContext(generalAutomationConfig);
+        await runAutomation(context, action, { team, mode });
         if (isApiCall) {
             return res.status(200).send('Automation run successfully');
         }
@@ -103,11 +98,17 @@ async function handleSlackInteraction(req, res) {
     res.send('Done');
 }
 
-async function runAutomation(context, action) {
-    console.log("Running automation", action);
+async function runAutomation(context, action, params = {}) {
+
+    const { team, mode = 'review' } = params;
     const configManager = new ConfigManager(context);
     configManager.enableAutomation(action);
-    const automationManager = new AutomationManager(configManager.getConfig());
+    const config = configManager.getConfig();
+    Object.values(config).forEach(automation => {
+        automation.then.data.mode = mode || 'review';
+        automation.then.data.team = team;
+    });
+    const automationManager = new AutomationManager(config);
     return automationManager.runAutomations(context);
 }
 
