@@ -302,7 +302,11 @@ class SlackService {
               "text": "Re-generate",
               "emoji": true
             },
-            "value": "re-generate-release-digest",
+            "value": `${JSON.stringify({
+              "action": "re-generate-release-digest",
+              "mode": "review",
+              "team": this.team
+            })}`,
             "action_id": "re-generate-release-digest"
           },
           {
@@ -313,7 +317,11 @@ class SlackService {
               "emoji": true
             },
             "style": "danger",
-            "value": "publish-release-digest",
+            "value": `${JSON.stringify({
+              "action": "publish-release-digest",
+              "mode": "publish",
+              "team": this.team
+            })}`,
             "action_id": "publish-release-digest"
           }
         ]

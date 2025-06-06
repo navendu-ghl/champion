@@ -78,24 +78,28 @@ async function handleGeneralAutomation(req, res) {
 }
 
 async function handleSlackInteraction(req, res) {
-    const payload = JSON.parse(req.body.payload);
-    const action = payload.actions?.[0];
-    const userId = payload.user.id;
-    const team = Object.entries(slackData).find(([_, value]) => value.reviewer === userId)[0];
-    const actionId = action?.action_id;
+    try {
+        const payload = JSON.parse(req.body.payload);
+        const action = payload.actions?.[0];
+        const actionId = action?.action_id;
+        const valuePayload = JSON.parse(action?.value);
+        const mode = valuePayload.mode;
+        const team = valuePayload.team;
 
     switch (actionId) {
         case 're-generate-release-digest':
             console.log("Re-generating release digest");
-            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'review', team } });
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: mode || 'review', team } });
             break;
         case 'publish-release-digest':
             console.log("Publishing release digest");
-            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: 'publish', team } });
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: moode || 'publish', team } });
             break;
     }
-
-    res.send('Done');
+        res.send('Done');
+    } catch (error) {
+        res.status(500).send('Error handling slack interaction', error.message);
+    }
 }
 
 async function runAutomation(context, action, params = {}) {
