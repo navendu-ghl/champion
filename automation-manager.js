@@ -21,42 +21,47 @@ class AutomationManager {
     }
 
     async runAutomations(context) {
-        const results = [];
-        const errors = [];
-        const isTaskAutomation = context instanceof TaskAutomationContext;
+        try {
+            const results = [];
+            const errors = [];
+            const isTaskAutomation = context instanceof TaskAutomationContext;
 
-        for (const automation of this.automations.values()) {
-            try {
-                const task = isTaskAutomation ? context.getTask() : null;
-                const isValid = isTaskAutomation ? await automation.validate(task) : true;
-                if (!isValid) {
-                    console.warn(`Automation ${automation.name} is not valid`);
-                    continue;
-                } else {
-                    console.log(`Automation ${automation.name} is valid`);
-                    await automation.run(context);
+            for (const automation of this.automations.values()) {
+                try {
+                    const task = isTaskAutomation ? context.getTask() : null;
+                    const isValid = isTaskAutomation ? await automation.validate(task) : true;
+                    if (!isValid) {
+                        console.warn(`Automation ${automation.name} is not valid`);
+                        continue;
+                    } else {
+                        console.log(`Automation ${automation.name} is valid`);
+                        await automation.run(context);
+                        sendLog({
+                            automation: automation.config.id,
+                            manualActionCount: automation.config.metadata.manualActionCount || 0,
+                            taskId: isTaskAutomation ? task.id : 'general',
+                            status: 'success'
+                        });
+                        results.push({ name: automation.name, status: 'success' });
+                    }
+                } catch (error) {
+                    console.error(`Error running automation ${automation.name}:`, error);
                     sendLog({
                         automation: automation.config.id,
                         manualActionCount: automation.config.metadata.manualActionCount || 0,
                         taskId: isTaskAutomation ? task.id : 'general',
-                        status: 'success'
+                        status: 'error',
+                        error: error.message
                     });
-                    results.push({ name: automation.name, status: 'success' });
+                    errors.push({ name: automation.name, error: error.message });
                 }
-            } catch (error) {
-                console.error(`Error running automation ${automation.name}:`, error);
-                sendLog({
-                    automation: automation.config.id,
-                    manualActionCount: automation.config.metadata.manualActionCount || 0,
-                    taskId: isTaskAutomation ? task.id : 'general',
-                    status: 'error',
-                    error: error.message
-                });
-                errors.push({ name: automation.name, error: error.message });
             }
-        }
 
-        return { results, errors };
+            return { results, errors };
+        } catch (error) {
+            console.error('Error running automations:', error);
+            throw error;
+        }
     }
 }
 
