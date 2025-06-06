@@ -7,7 +7,7 @@ const clickupData = require("../data/clickup.json");
 
 class PostStandupSummaryAutomation extends AutomationBase {
   dummyClickupUserId = 94880059;
-  
+
   constructor(config) {
     super(config);
     this.name = config.name;
@@ -17,6 +17,7 @@ class PostStandupSummaryAutomation extends AutomationBase {
     this.channelId = config.then.data.channelId;
     this.messageTs = config.then.data.messageTs;
     const assigneeEmail = config.then.data.assignee
+    // Because clickup api requires multiple assignees, we need to add a dummy user id
     this.assignees = assigneeEmail ? [usersData.find((user) => user.email === assigneeEmail).id, this.dummyClickupUserId] : undefined;
     this.clickupService = new ClickUpService({ team: this.team });
     this.slackService = new SlackService({ team: this.team });
