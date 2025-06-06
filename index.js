@@ -53,8 +53,7 @@ async function handleTaskAutomation(req, res) {
 async function handleGeneralAutomation(req, res) {
     const isApiCall = req && res;
     const action = req.query.action;
-    const team = req.query.team;
-    const mode = req.query.mode;
+    const { team, mode, ...rest } = req.query;
 
     if (!action || !team) {
         console.error("Action and team are required for general automation");
@@ -63,7 +62,7 @@ async function handleGeneralAutomation(req, res) {
 
     try {
         const context = new GeneralAutomationContext(generalAutomationConfig);
-        await runAutomation(context, action, { team, mode });
+        await runAutomation(context, action, { team, mode, ...rest });
         if (isApiCall) {
             return res.status(200).send('Automation run successfully');
         }
@@ -81,10 +80,27 @@ async function handleSlackInteraction(req, res) {
     try {
         const payload = JSON.parse(req.body.payload);
         const action = payload.actions?.[0];
-        const actionId = action?.action_id;
-        const valuePayload = JSON.parse(action?.value);
+        let actionId = action?.action_id;
+        if (!actionId) throw new Error('Action ID is required');
+
+        const _actionType = action.type;
+        let valuePayload = null;
+        if (_actionType === 'button') {
+            valuePayload = JSON.parse(action.value);
+        } else if (_actionType === 'overflow') {
+            valuePayload = JSON.parse(action.selected_option.value);
+        }
+
+        if (!valuePayload) throw new Error('Value payload is required');
+
+        if (actionId === 'more_options') {
+            actionId = valuePayload.subAction;
+        }
+
         const mode = valuePayload.mode;
         const team = valuePayload.team;
+        const channelId = payload.channel.id;
+        const messageTs = payload.message.ts;
 
     switch (actionId) {
         case 're-generate-release-digest':
@@ -95,6 +111,13 @@ async function handleSlackInteraction(req, res) {
             console.log("Publishing release digest");
             handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: moode || 'publish', team } });
             break;
+        case 'refresh-standup-summary':
+            console.log("Refreshing standup summary");
+            handleGeneralAutomation({ query: { action: 'post-standup-summary', ...valuePayload, mode: mode || 'refresh', channelId, messageTs } });
+            break;
+        case 'open-standup-board':
+            console.log("Opening standup board");
+            handleGeneralAutomation({ query: { action: 'open-standup-board', mode: null, team } });
     }
         res.send('Done');
     } catch (error) {
@@ -104,13 +127,17 @@ async function handleSlackInteraction(req, res) {
 
 async function runAutomation(context, action, params = {}) {
 
-    const { team, mode = 'review' } = params;
+    const { team, mode = 'review', ...rest } = params;
     const configManager = new ConfigManager(context);
     configManager.enableAutomation(action);
     const config = configManager.getConfig();
     Object.values(config).forEach(automation => {
         automation.then.data.mode = mode || 'review';
         automation.then.data.team = team;
+        automation.then.data = {
+            ...automation.then.data,
+            ...rest
+        }
     });
     const automationManager = new AutomationManager(config);
     return automationManager.runAutomations(context);

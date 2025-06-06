@@ -389,6 +389,35 @@ class SlackService {
     }
   }
 
+  async updateMessage({ message, channelId, messageTs = null }) {
+    if (!channelId || !messageTs) {
+      console.error('Channel ID and message TS are required');
+      return null;
+    }
+
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/chat.update`,
+        {
+          channel: channelId,
+          ...message,
+          parse: 'mrkdwn', // Enable markdown parsing
+          ts: messageTs,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.botToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error updating message:', error.message);
+      return false;
+    }
+  }
+
   getStandupSummaryParentMessage() {
     const keepSilent = this.team === 'mobile';
     const date = new Date().toLocaleDateString("en-GB");
@@ -440,13 +469,38 @@ class SlackService {
             },
           },
           {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: `<@${this.slackData.members[assigneeEmail]?.slackId}>`,
-              },
-            ],
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `<@${this.slackData.members[assigneeEmail]?.slackId}>`,
+            },
+            accessory: {
+              type: "overflow",
+              action_id: "more_options",
+              options: [
+                {
+                  text: {
+                    type: "plain_text",
+                    text: "Refresh"
+                  },
+                  value: `${JSON.stringify({
+                    "subAction": "refresh-standup-summary",
+                    "team": this.team,
+                    "assignee": assigneeEmail
+                  })}`
+                },
+                {
+                  text: {
+                    type: "plain_text",
+                    text: "Open Board"
+                  },
+                  value: `${JSON.stringify({
+                    "subAction": "open-standup-board",
+                    "team": this.team
+                  })}`
+                }
+				      ]
+			      }
           },
         ],
       };

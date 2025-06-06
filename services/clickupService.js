@@ -273,7 +273,7 @@ class ClickUpService {
     }
   }
 
-  async fetchTasksByListId({ listId, excludeStories = false, statuses = this.statuses }) {
+  async fetchTasksByListId({ listId, excludeStories = false, statuses = this.statuses, assignees = this.assignees }) {
     let page = 0;
     let allTasks = [];
     let hasMoreTasks = true;
@@ -281,7 +281,7 @@ class ClickUpService {
 
     while (hasMoreTasks) {
       // this API has a defaukt limit of 100 tasks per page
-      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${statuses.map((status) => `statuses=${status}`).join("&")}&${this.assignees.map((assignee) => `assignees=${assignee}`).join("&")}&page=${page}`;
+      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${statuses.map((status) => `statuses=${status}`).join("&")}&${assignees.map((assignee) => `assignees=${assignee}`).join("&")}&page=${page}`;
 
       console.log({ url });
       try {
@@ -499,9 +499,9 @@ class ClickUpService {
     return current.id;
   }
 
-  async summarizeTasksForStandup(listId) {
+  async summarizeTasksForStandup({ listId, statuses = this.standupStatuses, assignees = this.assignees }) {
     console.log("Fetching tasks for list:", listId);
-    const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses: this.standupStatuses });
+    const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses, assignees });
     if (!tasks) {
       console.log("No tasks found");
       return null;
