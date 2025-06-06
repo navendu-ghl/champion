@@ -109,7 +109,7 @@ async function handleSlackInteraction(req, res) {
             break;
         case 'publish-release-digest':
             console.log("Publishing release digest");
-            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: moode || 'publish', team } });
+            handleGeneralAutomation({ query: { action: 'post-weekly-release-digest', mode: mode || 'publish', team } });
             break;
         case 'refresh-standup-summary':
             console.log("Refreshing standup summary");
