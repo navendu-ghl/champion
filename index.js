@@ -6,9 +6,56 @@ const generalAutomationConfig = require('./config/general-automation-config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const slackData = require('./data/slack.json');
+const SlackService = require('./services/slackService');
+
+// Initialize SlackService for alerts
+const slackService = new SlackService({ team: 'automation-calendars' });
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+    const originalSend = res.send;
+  
+    res.send = function (body) {
+      const statusCode = res.statusCode;
+  
+      // Log a special alert for non-2xx responses
+      if (statusCode < 200 || statusCode >= 300) {
+        const error = res.error;
+        
+        // Send alert to Slack
+        const message = {
+          text: "🚨 API Error Alert",
+          blocks: [
+            {
+              type: "header",
+              text: {
+                type: "plain_text",
+                text: "🚨 API Error Alert",
+                emoji: true
+              }
+            },
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: `*Endpoint:* \`${req.method} ${req.originalUrl}\`\n*Status Code:* \`${statusCode}\`\n*Error:* ${error || body || 'No error details available'}`
+              }
+            }
+          ]
+        };
+        
+        slackService.postMessage({ 
+          message, 
+          channelId: 'U07H59XPV43'    // Devangi's slack id
+        }).catch(err => console.error('Error sending Slack alert:', err));
+      }
+      return originalSend.call(this, body);
+    };
+  
+    next();
+  });
 
 app.get('/', (req, res) => {
     res.send('Hello World');
