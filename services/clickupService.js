@@ -8,6 +8,7 @@ class ClickUpService {
   // apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
 
   constructor({ team }) {
+    this.CLICKUP_WORKSPACE_ID = '8631005';
     this.CLICKUP_SPRINT_FOLDER_ID = clickupData[team].sprintFolderId;
     this.customFields = clickupData[team].customFields || [];
     this.statuses = clickupData[team].statuses || [];
@@ -540,6 +541,10 @@ class ClickUpService {
     }
 
     return summary;
+  }
+
+  getSprintBoardUrl(sprintId) {
+    return `https://app.clickup.com/${this.CLICKUP_WORKSPACE_ID}/v/li/${sprintId}`;
   }
 }
 

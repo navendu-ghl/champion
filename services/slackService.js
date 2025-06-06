@@ -447,7 +447,7 @@ class SlackService {
     return parentMessage;
   }
 
-  formatStandupSummaryForSlack(summary) {
+  formatStandupSummaryForSlack({ summary, sprintBoardUrl }) {
     if (!summary) return ["No tasks found."];
 
     const messages = [];
@@ -497,7 +497,8 @@ class SlackService {
                   value: `${JSON.stringify({
                     "subAction": "open-standup-board",
                     "team": this.team
-                  })}`
+                  })}`,
+                  url: `${sprintBoardUrl}`
                 }
 				      ]
 			      }

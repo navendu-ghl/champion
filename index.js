@@ -115,9 +115,6 @@ async function handleSlackInteraction(req, res) {
             console.log("Refreshing standup summary");
             handleGeneralAutomation({ query: { action: 'post-standup-summary', ...valuePayload, mode: mode || 'refresh', channelId, messageTs } });
             break;
-        case 'open-standup-board':
-            console.log("Opening standup board");
-            handleGeneralAutomation({ query: { action: 'open-standup-board', mode: null, team } });
     }
         res.send('Done');
     } catch (error) {

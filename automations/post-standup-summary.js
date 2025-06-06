@@ -34,10 +34,11 @@ class PostStandupSummaryAutomation extends AutomationBase {
       // Get task summary from ClickUp
       const currentSprintId = await this.clickupService.fetchCurrentSprint();
       console.log({ currentSprintId });
+      const sprintBoardUrl = this.clickupService.getSprintBoardUrl(currentSprintId);
       const summary = await this.clickupService.summarizeTasksForStandup({ listId: currentSprintId, assignees: this.subAction === 'refresh-standup-summary' ? this.assignees : undefined });
 
       const parentMessage = this.slackService.getStandupSummaryParentMessage();
-      const messages = this.slackService.formatStandupSummaryForSlack(summary);
+      const messages = this.slackService.formatStandupSummaryForSlack({ summary, sprintBoardUrl });
 
       
       if (this.mode === 'publish') {
