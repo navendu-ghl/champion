@@ -141,6 +141,43 @@
         "members": [
             "jees.denny@gohighlevel.com",
             "srirang.sathyan@gohighlevel.com"
+        ],
+        "statuses": [
+            "todo",
+            "ongoing product work",
+            "ready for design",
+            "in design",
+            "design complete",
+            "product work complete",
+            "general support request",
+            "ready for development",
+            "in dev sprint",
+            "qa fail",
+            "in code review",
+            "blocked",
+            "new ticket",
+            "ready for qa",
+            "in qa",
+            "qa completed",
+            "ready for deploy",
+            "done",
+            "Closed"
+        ],
+        "standupStatuses": [
+            "todo",
+            "ready for development",
+            "in dev sprint",
+            "qa fail",
+            "in code review",
+            "blocked",
+            "ready for qa",
+            "in qa",
+            "qa completed",
+            "ready for deploy"
+        ],
+        "closedStatuses": [
+            "done",
+            "Closed"
         ]
     },
     "leadgen-payments-ecomm": {
@@ -161,7 +198,7 @@
             "arpit.gupta@gohighlevel.com",
             "nitin.nithilesh@gohighlevel.com",
             "saravanakumar@gohighlevel.com",
-            "mohammed.zihan@gohighlevel.com",
+            "mohammed.zihan@gohighlevel.com"
         ]
     },
     "leadgen-payments-core": {

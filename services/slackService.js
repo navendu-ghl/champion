@@ -51,97 +51,7 @@ class SlackService {
     this.baseUrl = 'https://slack.com/api';
     this.team = team;
     this.slackData = slackData[team];
-  }
-
-  formatDailySummaryChildMessages(summary) {
-    if (!summary) return ['No tasks found.'];
-
-    const messages = [];
-    const MAX_BLOCKS = 50;
-
-    Object.entries(summary).forEach(([assignee, data]) => {
-      let currentMessage = {
-        text: `Task Summary for ${assignee}`,
-        blocks: [
-          {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: `👤  ${assignee}`,
-              emoji: true,
-            },
-          },
-          {
-            type: 'context',
-            elements: [
-              {
-                type: 'mrkdwn',
-                text: `<@${this.SLACK_MEMBER_IDS[assignee]}>`,
-              },
-            ],
-          },
-        ],
-      };
-
-      data.tasks.forEach((task) => {
-        const taskBlocks = [];
-        const dueDate = task.due_date ? new Date(parseInt(task.due_date)).toLocaleDateString('en-GB') : 'No due date';
-        const points = task.points || 0;
-        const status = task.status;
-        
-        taskBlocks.push(
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `• ${task.name}`,
-            },
-          },
-          {
-            type: 'context',
-            elements: [
-              {
-                type: 'mrkdwn',
-                text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
-              },
-            ],
-          }
-        );
-
-        // Check if adding task blocks would exceed limit
-        if (currentMessage.blocks.length + taskBlocks.length > MAX_BLOCKS) {
-          currentMessage.blocks.push({
-            type: 'divider',
-          });
-          messages.push(currentMessage);
-          
-          // Start a new message for the same assignee
-          currentMessage = {
-            text: `Task Summary for ${assignee} (Continued)`,
-            blocks: [
-              {
-                type: 'header',
-                text: {
-                  type: 'plain_text',
-                  text: `👤  ${assignee} (Continued)`,
-                  emoji: true,
-                },
-              },
-            ],
-          };
-        }
-
-        currentMessage.blocks.push(...taskBlocks);
-      });
-
-      // Add the final divider and push the last message
-      currentMessage.blocks.push({
-        type: 'divider',
-      });
-      messages.push(currentMessage);
-    });
-
-    return messages;
+    this.MAX_BLOCKS = 50;
   }
 
   formatReleaseDigestMessages({ summary, startDate, endDate }) {
@@ -506,31 +416,38 @@ class SlackService {
           },
         ],
       };
-
+      data.tasks.sort((a, b) =>  a.status.localeCompare(b.status));
       data.tasks.forEach((task) => {
         const dueDate = task.due_date ? new Date(parseInt(task.due_date)).toLocaleDateString("en-GB") : "No due date";
         const points = task.points || 0;
         const status = task.status;
-        message.blocks.push(
-          ...[
-            {
-              type: "section",
-              text: {
+
+        const taskBlocks = [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `• ${task.name}`,
+            },
+          },
+          {
+            type: "context",
+            elements: [
+              {
                 type: "mrkdwn",
-                text: `• ${task.name}`,
+                text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
               },
-            },
-            {
-              type: "context",
-              elements: [
-                {
-                  type: "mrkdwn",
-                  text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
-                },
-              ],
-            },
-          ],
-        );
+            ],
+          },
+        ];
+
+        // if block length is greater than MAX_BLOCKS, do not add the task block
+        // +1 for the divider
+        if (message.blocks.length + taskBlocks.length + 1 > this.MAX_BLOCKS) {
+          return;
+        }
+
+        message.blocks.push(...taskBlocks);
       });
 
       message.blocks.push({
@@ -546,6 +463,13 @@ class SlackService {
       const statusTableMessage = {
         text: "Task Summary by Status",
         blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: "*📌 Task Status Summary*",
+            }
+          },
           {
             type: "section",
             text: {
@@ -582,7 +506,10 @@ class SlackService {
     const header = "Status                   | Count";
     const separator = "-------------------------|------";
   
-    for (const [status, items] of Object.entries(statusMap)) {
+    // sort statuses by status
+    const sortedStatuses = Object.keys(statusMap).sort((a, b) => a.localeCompare(b));
+    for (const status of sortedStatuses) {
+      const items = statusMap[status];
       const label = status.padEnd(25); // pad status label to align
       rows.push(`${label}| ${items.length}`);
     }
