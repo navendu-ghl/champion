@@ -76,7 +76,10 @@
                 "name": "Swadha Bhoj",
                 "slackId": "U05R748ELTE"
             }
-          }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
     },
     "mobile": {
         "internalChannel": "GN1KGTUG1",

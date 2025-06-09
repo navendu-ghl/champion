@@ -448,12 +448,13 @@ class SlackService {
   }
 
   formatStandupSummaryForSlack({ summary, sprintBoardUrl }) {
-    if (!summary) return ["No tasks found."];
+    const { summaryByAssignee, summaryByStatus } = summary;
+    if (!summaryByAssignee) return ["No tasks found."];
 
     const messages = [];
     const date = new Date().toLocaleDateString();
 
-    Object.entries(summary).forEach(([assigneeEmail, data]) => {
+    Object.entries(summaryByAssignee).forEach(([assigneeEmail, data]) => {
       const assignee = this.slackData.members[assigneeEmail]?.name;
       if (!assignee) return;
 
@@ -538,8 +539,57 @@ class SlackService {
       messages.push(message);
     });
 
+    const shouldShowStatusTable = this.slackData.features.showStatusTableInStandup;
+    if (shouldShowStatusTable) {
+      // Add summary table by status
+      const mrkdwnText = this.formatTaskStatusTable(summaryByStatus);
+      const statusTableMessage = {
+        text: "Task Summary by Status",
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: mrkdwnText
+            },
+            accessory: {
+              type: "overflow",
+              action_id: "more_options",
+              options: [
+                {
+                  text: {
+                    type: "plain_text",
+                    text: "Open Board"
+                  },
+                  value: `${JSON.stringify({
+                    "subAction": "open-standup-board",
+                    "team": this.team
+                  })}`,
+                  url: `${sprintBoardUrl}`
+                }
+              ]
+            }
+          },
+        ],
+      };
+      messages.push(statusTableMessage);
+    }
     return messages;
   }
+
+  formatTaskStatusTable(statusMap) {
+    const rows = [];
+    const header = "Status                   | Count";
+    const separator = "-------------------------|------";
+  
+    for (const [status, items] of Object.entries(statusMap)) {
+      const label = status.padEnd(25); // pad status label to align
+      rows.push(`${label}| ${items.length}`);
+    }
+  
+    return "```\n" + [header, separator, ...rows].join("\n") + "\n```";
+  }
+  
 }
 
 module.exports = SlackService;

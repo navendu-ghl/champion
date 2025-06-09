@@ -509,7 +509,8 @@ class ClickUpService {
     }
     console.log("Tasks fetched:", tasks.length);
 
-    const summary = {};
+    const summaryByAssignee = {};
+    const summaryByStatus = {};
 
     // Helper function to process a single task
     const processTask = (task) => {
@@ -518,13 +519,13 @@ class ClickUpService {
       task.assignees.forEach((assignee) => {
         const assigneeEmail = assignee.email;
 
-        if (!summary[assigneeEmail]) {
-          summary[assigneeEmail] = {
+        if (!summaryByAssignee[assigneeEmail]) {
+          summaryByAssignee[assigneeEmail] = {
             tasks: [],
           };
         }
 
-        summary[assigneeEmail].tasks.push({
+        summaryByAssignee[assigneeEmail].tasks.push({
           id: task.id,
           name: task.name,
           status: task.status?.status || "No Status",
@@ -533,6 +534,18 @@ class ClickUpService {
           due_date: task.due_date,
         });
       });
+
+      if (!summaryByStatus[task.status?.status]) {
+        summaryByStatus[task.status?.status] = [];
+      }
+
+      summaryByStatus[task.status?.status].push({
+        id: task.id,
+        name: task.name,
+        url: task.url,
+        points: task.points,
+        due_date: task.due_date,
+      });
     };
 
     // Process all tasks in the response
@@ -540,7 +553,7 @@ class ClickUpService {
       tasks.forEach(processTask);
     }
 
-    return summary;
+    return { summaryByAssignee, summaryByStatus };
   }
 
   getSprintBoardUrl(sprintId) {
