@@ -135,5 +135,87 @@
         "closedStatuses": [
             "Closed"
         ]
+    },
+    "leadgen-payments-documents": {
+        "sprintFolderId": "90020142803",
+        "members": [
+            "jees.denny@gohighlevel.com",
+            "srirang.sathyan@gohighlevel.com"
+        ],
+        "statuses": [
+            "todo",
+            "ongoing product work",
+            "ready for design",
+            "in design",
+            "design complete",
+            "product work complete",
+            "general support request",
+            "ready for development",
+            "in dev sprint",
+            "qa fail",
+            "in code review",
+            "blocked",
+            "new ticket",
+            "ready for qa",
+            "in qa",
+            "qa completed",
+            "ready for deploy",
+            "done",
+            "Closed"
+        ],
+        "standupStatuses": [
+            "todo",
+            "ready for development",
+            "in dev sprint",
+            "qa fail",
+            "in code review",
+            "blocked",
+            "ready for qa",
+            "in qa",
+            "qa completed",
+            "ready for deploy"
+        ],
+        "closedStatuses": [
+            "done",
+            "Closed"
+        ]
+    },
+    "leadgen-payments-ecomm": {
+        "sprintFolderId": "90021057985",
+        "members": [
+            "abu.siddiq@gohighlevel.com",
+            "ritvik.munjal@gohighlevel.com",
+            "shareef@gohighlevel.com",
+            "sravani@gohighlevel.com",
+            "badiginti.murali@gohighlevel.com"
+        ]
+    },
+    "leadgen-payments-integrations": {
+        "sprintFolderId": "90164191795",
+        "members": [
+            "abhansh.giri@gohighlevel.com",
+            "aditya.gholkar@gohighlevel.com",
+            "arpit.gupta@gohighlevel.com",
+            "nitin.nithilesh@gohighlevel.com",
+            "saravanakumar@gohighlevel.com",
+            "mohammed.zihan@gohighlevel.com"
+        ]
+    },
+    "leadgen-payments-core": {
+        "sprintFolderId": "90163848877",
+        "members": [
+            "aditya.gholkar@gohighlevel.com",
+            "raghul.s@gohighlevel.com",
+            "saravanakumar@gohighlevel.com",
+            "shareef@gohighlevel.com"
+        ]
+    },
+    "leadgen-payments-product": {
+        "sprintFolderId": "90021062219",
+        "members": [
+            "lucky.jain@gohighlevel.com",
+            "manit.shah@gohighlevel.com",
+            "vatsal.mehta@gohighlevel.com"
+        ]
     }
 }

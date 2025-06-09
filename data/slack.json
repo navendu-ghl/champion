@@ -167,5 +167,135 @@
                 "slackId": "U07QKCLTGEQ"
             }
         }
+    },
+    "leadgen-payments-documents": {
+        "internalChannel": "C06L39YUW9Z",
+        "reviewer": "U08NFJZP45U",
+        "userGroup": "S09194MCS56",
+        "members": {
+            "jees.denny@gohighlevel.com": {
+                "name": "Jees K Denny",
+                "slackId": "U05D2QNGXK3"
+            },
+            "srirang.sathyan@gohighlevel.com": {
+                "name": "Srirang Sathyan",
+                "slackId": "U07JRK8J0K1"
+            }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
+    },
+    "leadgen-payments-ecomm": {
+        "internalChannel": "C06CM2S9ZQF",
+        "reviewer": "U08NFJZP45U",
+        "userGroup": "S09194MCS56",
+        "members": {
+            "abu.siddiq@gohighlevel.com": {
+                "name": "Abu Bakker Siddiq",
+                "slackId": "U06F4344M4J"
+            },
+            "ritvik.munjal@gohighlevel.com": {
+                "name": "Ritvik Munjal",
+                "slackId": "U076QPS8TK3"
+            },
+            "shareef@gohighlevel.com": {
+                "name": "Shareef P",
+                "slackId": "U046WJFNP42"
+            },
+            "sravani@gohighlevel.com": {
+                "name": "Sravani N",
+                "slackId": "U03KG5NSFE3"
+            },
+            "badiginti.murali@gohighlevel.com": {
+                "name": "Badiginti Murali",
+                "slackId": "U08V8QXQ6HE"
+            }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
+    },
+    "leadgen-payments-integrations": {
+        "internalChannel": "C061W1GR9NX",
+        "reviewer": "U08NFJZP45U",
+        "userGroup": "S09194MCS56",
+        "members": {
+            "abhansh.giri@gohighlevel.com": {
+                "name": "Abhansh Giri",
+                "slackId": "U05M27RU42G"
+            },
+            "aditya.gholkar@gohighlevel.com": {
+                "name": "Aditya Gholkar",
+                "slackId": "U07TF2NJSBV"
+            },
+            "arpit.gupta@gohighlevel.com": {
+                "name": "Arpit Gupta",
+                "slackId": "U069NBRJX3L"
+            },
+            "nitin.nithilesh@gohighlevel.com": {
+                "name": "Nitin Nithilesh",
+                "slackId": "U07KAJAD13Q"
+            },
+            "saravanakumar@gohighlevel.com": {
+                "name": "Saravanakumar P",
+                "slackId": "U045YKP5K8S"
+            },
+            "mohammed.zihan@gohighlevel.com": {
+                "name": "Zihan",
+                "slackId": "U08NFK07DJS"
+            }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
+    },
+    "leadgen-payments-core": {
+        "internalChannel": "C061W1GR9NX",
+        "reviewer": "U08NFJZP45U",
+        "userGroup": "S09194MCS56",
+        "members": {
+            "aditya.gholkar@gohighlevel.com": {
+                "name": "Aditya Gholkar",
+                "slackId": "U07TF2NJSBV"
+            },
+            "raghul.s@gohighlevel.com": {
+                "name": "Raghul S",
+                "slackId": "U0603RSRH0C"
+            },
+            "saravanakumar@gohighlevel.com": {
+                "name": "Saravanakumar P",
+                "slackId": "U045YKP5K8S"
+            },
+            "shareef@gohighlevel.com": {
+                "name": "Shareef P",
+                "slackId": "U046WJFNP42"
+            }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
+    },
+    "leadgen-payments-product": {
+        "internalChannel": "C061W1GR9NX",
+        "reviewer": "U08NFJZP45U",
+        "userGroup": "S09194MCS56",
+        "members": {
+            "lucky.jain@gohighlevel.com": {
+                "name": "Lucky Jain",
+                "slackId": "U07JZGZ7X8W"
+            },
+            "manit.shah@gohighlevel.com": {
+                "name": "Manit Shah",
+                "slackId": "U06C220RBR9"
+            },
+            "vatsal.mehta@gohighlevel.com": {
+                "name": "Vatsal Mehta",
+                "slackId": "U06493HASKC"
+            }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
     }
 }
