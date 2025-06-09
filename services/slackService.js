@@ -389,6 +389,35 @@ class SlackService {
     }
   }
 
+  async updateMessage({ message, channelId, messageTs = null }) {
+    if (!channelId || !messageTs) {
+      console.error('Channel ID and message TS are required');
+      return null;
+    }
+
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/chat.update`,
+        {
+          channel: channelId,
+          ...message,
+          parse: 'mrkdwn', // Enable markdown parsing
+          ts: messageTs,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.botToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error updating message:', error.message);
+      return false;
+    }
+  }
+
   getStandupSummaryParentMessage() {
     const keepSilent = this.team === 'mobile';
     const date = new Date().toLocaleDateString("en-GB");
@@ -418,13 +447,14 @@ class SlackService {
     return parentMessage;
   }
 
-  formatStandupSummaryForSlack(summary) {
-    if (!summary) return ["No tasks found."];
+  formatStandupSummaryForSlack({ summary, sprintBoardUrl }) {
+    const { summaryByAssignee, summaryByStatus } = summary;
+    if (!summaryByAssignee) return ["No tasks found."];
 
     const messages = [];
     const date = new Date().toLocaleDateString();
 
-    Object.entries(summary).forEach(([assigneeEmail, data]) => {
+    Object.entries(summaryByAssignee).forEach(([assigneeEmail, data]) => {
       const assignee = this.slackData.members[assigneeEmail]?.name;
       if (!assignee) return;
 
@@ -440,13 +470,39 @@ class SlackService {
             },
           },
           {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: `<@${this.slackData.members[assigneeEmail]?.slackId}>`,
-              },
-            ],
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `<@${this.slackData.members[assigneeEmail]?.slackId}>`,
+            },
+            accessory: {
+              type: "overflow",
+              action_id: "more_options",
+              options: [
+                {
+                  text: {
+                    type: "plain_text",
+                    text: "Refresh"
+                  },
+                  value: `${JSON.stringify({
+                    "subAction": "refresh-standup-summary",
+                    "team": this.team,
+                    "assignee": assigneeEmail
+                  })}`
+                },
+                {
+                  text: {
+                    type: "plain_text",
+                    text: "Open Board"
+                  },
+                  value: `${JSON.stringify({
+                    "subAction": "open-standup-board",
+                    "team": this.team
+                  })}`,
+                  url: `${sprintBoardUrl}`
+                }
+				      ]
+			      }
           },
         ],
       };
@@ -483,8 +539,57 @@ class SlackService {
       messages.push(message);
     });
 
+    const shouldShowStatusTable = this.slackData.features?.showStatusTableInStandup;
+    if (shouldShowStatusTable) {
+      // Add summary table by status
+      const mrkdwnText = this.formatTaskStatusTable(summaryByStatus);
+      const statusTableMessage = {
+        text: "Task Summary by Status",
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: mrkdwnText
+            },
+            accessory: {
+              type: "overflow",
+              action_id: "more_options",
+              options: [
+                {
+                  text: {
+                    type: "plain_text",
+                    text: "Open Board"
+                  },
+                  value: `${JSON.stringify({
+                    "subAction": "open-standup-board",
+                    "team": this.team
+                  })}`,
+                  url: `${sprintBoardUrl}`
+                }
+              ]
+            }
+          },
+        ],
+      };
+      messages.push(statusTableMessage);
+    }
     return messages;
   }
+
+  formatTaskStatusTable(statusMap) {
+    const rows = [];
+    const header = "Status                   | Count";
+    const separator = "-------------------------|------";
+  
+    for (const [status, items] of Object.entries(statusMap)) {
+      const label = status.padEnd(25); // pad status label to align
+      rows.push(`${label}| ${items.length}`);
+    }
+  
+    return "```\n" + [header, separator, ...rows].join("\n") + "\n```";
+  }
+  
 }
 
 module.exports = SlackService;

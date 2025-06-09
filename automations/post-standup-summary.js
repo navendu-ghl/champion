@@ -2,13 +2,23 @@ const AutomationBase = require("../automation-base");
 const ClickUpService = require("../services/clickupService");
 const SlackService = require("../services/slackService");
 const slackData = require("../data/slack.json");
+const usersData = require("../data/users.json");
+const clickupData = require("../data/clickup.json");
 
 class PostStandupSummaryAutomation extends AutomationBase {
+  dummyClickupUserId = 94880059;
+
   constructor(config) {
     super(config);
     this.name = config.name;
     this.team = config.then.data.team;
     this.mode = config.then.data.mode;
+    this.subAction = config.then.data.subAction;
+    this.channelId = config.then.data.channelId;
+    this.messageTs = config.then.data.messageTs;
+    const assigneeEmail = config.then.data.assignee
+    // Because clickup api requires multiple assignees, we need to add a dummy user id
+    this.assignees = assigneeEmail ? [usersData.find((user) => user.email === assigneeEmail).id, this.dummyClickupUserId] : undefined;
     this.clickupService = new ClickUpService({ team: this.team });
     this.slackService = new SlackService({ team: this.team });
   }
@@ -24,17 +34,22 @@ class PostStandupSummaryAutomation extends AutomationBase {
       // Get task summary from ClickUp
       const currentSprintId = await this.clickupService.fetchCurrentSprint();
       console.log({ currentSprintId });
-      const summary = await this.clickupService.summarizeTasksForStandup(currentSprintId);
+      const sprintBoardUrl = this.clickupService.getSprintBoardUrl(currentSprintId);
+      const summary = await this.clickupService.summarizeTasksForStandup({ listId: currentSprintId, assignees: this.subAction === 'refresh-standup-summary' ? this.assignees : undefined });
 
       const parentMessage = this.slackService.getStandupSummaryParentMessage();
-      const messages = this.slackService.formatStandupSummaryForSlack(summary);
+      const messages = this.slackService.formatStandupSummaryForSlack({ summary, sprintBoardUrl });
 
+      
       if (this.mode === 'publish') {
         console.log('Publishing standup summary')
         await this.publishStandupSummary({ parentMessage, messages });
       } else if (this.mode === 'review') {
         console.log('Sending standup summary for review')
         await this.sendStandupSummaryForReview({ parentMessage, messages });
+      } else if (this.mode === 'refresh') {
+        console.log('Refreshing standup summary')
+        await this.refreshStandupSummary({ message: messages[0] });
       }
 
       console.log("Standup summary posted successfully!");
@@ -78,6 +93,21 @@ class PostStandupSummaryAutomation extends AutomationBase {
       }
     } catch (error) {
       console.error("Error publishing standup summary:", error);
+      throw error;
+    }
+  }
+
+  async refreshStandupSummary({ message }) {
+    try {
+      const channelId = this.channelId;
+      const messageTs = this.messageTs;
+      if (!channelId || !messageTs) {
+        throw new Error("refreshStandupSummary: Channel ID or message TS not found");
+      }
+     const response = await this.slackService.updateMessage({ message, channelId, messageTs });
+     console.log({ response });
+    } catch (error) {
+      console.error("Error refreshing standup summary:", error);
       throw error;
     }
   }
