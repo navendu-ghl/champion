@@ -171,7 +171,7 @@
     "leadgen-payments-documents": {
         "internalChannel": "C06L39YUW9Z",
         "reviewer": "U08NFJZP45U",
-        "userGroup": "S087ZCJ7X36",
+        "userGroup": "S09194MCS56",
         "members": {
             "jees.denny@gohighlevel.com": {
                 "name": "Jees K Denny",
@@ -181,12 +181,15 @@
                 "name": "Srirang Sathyan",
                 "slackId": "U07JRK8J0K1"
             }
+        },
+        "features": {
+            "showStatusTableInStandup": true
         }
     },
     "leadgen-payments-ecomm": {
         "internalChannel": "C06CM2S9ZQF",
         "reviewer": "U08NFJZP45U",
-        "userGroup": "S0743DPSYGZ",
+        "userGroup": "S09194MCS56",
         "members": {
             "abu.siddiq@gohighlevel.com": {
                 "name": "Abu Bakker Siddiq",
@@ -208,12 +211,15 @@
                 "name": "Badiginti Murali",
                 "slackId": "U08V8QXQ6HE"
             }
+        },
+        "features": {
+            "showStatusTableInStandup": true
         }
     },
     "leadgen-payments-integrations": {
         "internalChannel": "C061W1GR9NX",
         "reviewer": "U08NFJZP45U",
-        "userGroup": "S08RW8US5FZ",
+        "userGroup": "S09194MCS56",
         "members": {
             "abhansh.giri@gohighlevel.com": {
                 "name": "Abhansh Giri",
@@ -239,12 +245,15 @@
                 "name": "Zihan",
                 "slackId": "U08NFK07DJS"
             }
+        },
+        "features": {
+            "showStatusTableInStandup": true
         }
     },
     "leadgen-payments-core": {
         "internalChannel": "C061W1GR9NX",
         "reviewer": "U08NFJZP45U",
-        "userGroup": "S08GWE7U41G",
+        "userGroup": "S09194MCS56",
         "members": {
             "aditya.gholkar@gohighlevel.com": {
                 "name": "Aditya Gholkar",
@@ -262,12 +271,15 @@
                 "name": "Shareef P",
                 "slackId": "U046WJFNP42"
             }
+        },
+        "features": {
+            "showStatusTableInStandup": true
         }
     },
     "leadgen-payments-product": {
         "internalChannel": "C061W1GR9NX",
         "reviewer": "U08NFJZP45U",
-        "userGroup": "S0836NB1GSX",
+        "userGroup": "S09194MCS56",
         "members": {
             "lucky.jain@gohighlevel.com": {
                 "name": "Lucky Jain",
@@ -281,6 +293,9 @@
                 "name": "Vatsal Mehta",
                 "slackId": "U06493HASKC"
             }
+        },
+        "features": {
+            "showStatusTableInStandup": true
         }
     }
 }

@@ -348,7 +348,7 @@ class SlackService {
           elements: [
             {
               type: "mrkdwn",
-              text: `<!subteam^${this.slackData.userGroup}>`,
+              text: `team: ${this.team}  |  cc: <!subteam^${this.slackData.userGroup}>`,
             },
           ],
         }]: []),
