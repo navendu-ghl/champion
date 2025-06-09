@@ -539,7 +539,7 @@ class SlackService {
       messages.push(message);
     });
 
-    const shouldShowStatusTable = this.slackData.features.showStatusTableInStandup;
+    const shouldShowStatusTable = this.slackData.features?.showStatusTableInStandup;
     if (shouldShowStatusTable) {
       // Add summary table by status
       const mrkdwnText = this.formatTaskStatusTable(summaryByStatus);
