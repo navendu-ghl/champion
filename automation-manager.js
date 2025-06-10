@@ -27,33 +27,21 @@ class AutomationManager {
             const isTaskAutomation = context instanceof TaskAutomationContext;
 
             for (const automation of this.automations.values()) {
-                try {
-                    const task = isTaskAutomation ? context.getTask() : null;
-                    const isValid = isTaskAutomation ? await automation.validate(task) : true;
-                    if (!isValid) {
-                        console.warn(`Automation ${automation.name} is not valid`);
-                        continue;
-                    } else {
-                        console.log(`Automation ${automation.name} is valid`);
-                        await automation.run(context);
-                        sendLog({
-                            automation: automation.config.id,
-                            manualActionCount: automation.config.metadata.manualActionCount || 0,
-                            taskId: isTaskAutomation ? task.id : 'general',
-                            status: 'success'
-                        });
-                        results.push({ name: automation.name, status: 'success' });
-                    }
-                } catch (error) {
-                    console.error(`Error running automation ${automation.name}:`, error);
+                const task = isTaskAutomation ? context.getTask() : null;
+                const isValid = isTaskAutomation ? await automation.validate(task) : true;
+                if (!isValid) {
+                    console.warn(`Automation ${automation.name} is not valid`);
+                    continue;
+                } else {
+                    console.log(`Automation ${automation.name} is valid`);
+                    await automation.run(context);
                     sendLog({
                         automation: automation.config.id,
                         manualActionCount: automation.config.metadata.manualActionCount || 0,
                         taskId: isTaskAutomation ? task.id : 'general',
-                        status: 'error',
-                        error: error.message
+                        status: 'success'
                     });
-                    errors.push({ name: automation.name, error: error.message });
+                    results.push({ name: automation.name, status: 'success' });
                 }
             }
 

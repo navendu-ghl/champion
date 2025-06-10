@@ -358,147 +358,152 @@ class SlackService {
   }
 
   formatStandupSummaryForSlack({ summary, sprintBoardUrl }) {
-    const { summaryByAssignee, summaryByStatus } = summary;
-    if (!summaryByAssignee) return ["No tasks found."];
+    try {
+      const { summaryByAssignee, summaryByStatus } = summary;
+      if (!summaryByAssignee) return ["No tasks found."];
 
-    const messages = [];
-    const date = new Date().toLocaleDateString();
+      const messages = [];
+      const date = new Date().toLocaleDateString();
 
-    Object.entries(summaryByAssignee).forEach(([assigneeEmail, data]) => {
-      const assignee = this.slackData.members[assigneeEmail]?.name;
-      if (!assignee) return;
+      Object.entries(summaryByAssignee).forEach(([assigneeEmail, data]) => {
+        const assignee = this.slackData.members[assigneeEmail]?.name;
+        if (!assignee) return;
 
-      const message = {
-        text: `Task Summary for ${assignee}`,
-        blocks: [
-          {
-            type: "header",
-            text: {
-              type: "plain_text",
-              text: `👤  ${assignee}`,
-              emoji: true,
-            },
-          },
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: `<@${this.slackData.members[assigneeEmail]?.slackId}>`,
-            },
-            accessory: {
-              type: "overflow",
-              action_id: "more_options",
-              options: [
-                {
-                  text: {
-                    type: "plain_text",
-                    text: "Refresh"
-                  },
-                  value: `${JSON.stringify({
-                    "subAction": "refresh-standup-summary",
-                    "team": this.team,
-                    "assignee": assigneeEmail
-                  })}`
-                },
-                {
-                  text: {
-                    type: "plain_text",
-                    text: "Open Board"
-                  },
-                  value: `${JSON.stringify({
-                    "subAction": "open-standup-board",
-                    "team": this.team
-                  })}`,
-                  url: `${sprintBoardUrl}`
-                }
-				      ]
-			      }
-          },
-        ],
-      };
-      data.tasks.sort((a, b) =>  a.status.localeCompare(b.status));
-      data.tasks.forEach((task) => {
-        const dueDate = task.due_date ? new Date(parseInt(task.due_date)).toLocaleDateString("en-GB") : "No due date";
-        const points = task.points || 0;
-        const status = task.status;
-
-        const taskBlocks = [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: `• ${task.name}`,
-            },
-          },
-          {
-            type: "context",
-            elements: [
-              {
-                type: "mrkdwn",
-                text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
+        const message = {
+          text: `Task Summary for ${assignee}`,
+          blocks: [
+            {
+              type: "header",
+              text: {
+                type: "plain_text",
+                text: `👤  ${assignee}`,
+                emoji: true,
               },
-            ],
-          },
-        ];
-
-        // if block length is greater than MAX_BLOCKS, do not add the task block
-        // +1 for the divider
-        if (message.blocks.length + taskBlocks.length + 1 > this.MAX_BLOCKS) {
-          return;
-        }
-
-        message.blocks.push(...taskBlocks);
-      });
-
-      message.blocks.push({
-        type: "divider",
-      });
-      messages.push(message);
-    });
-
-    const shouldShowStatusTable = this.slackData.features?.showStatusTableInStandup;
-    if (shouldShowStatusTable) {
-      // Add summary table by status
-      const mrkdwnText = this.formatTaskStatusTable(summaryByStatus);
-      const statusTableMessage = {
-        text: "Task Summary by Status",
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: "*📌 Task Status Summary*",
-            }
-          },
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: mrkdwnText
             },
-            accessory: {
-              type: "overflow",
-              action_id: "more_options",
-              options: [
-                {
-                  text: {
-                    type: "plain_text",
-                    text: "Open Board"
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: `<@${this.slackData.members[assigneeEmail]?.slackId}>`,
+              },
+              accessory: {
+                type: "overflow",
+                action_id: "more_options",
+                options: [
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "Refresh"
+                    },
+                    value: `${JSON.stringify({
+                      "subAction": "refresh-standup-summary",
+                      "team": this.team,
+                      "assignee": assigneeEmail
+                    })}`
                   },
-                  value: `${JSON.stringify({
-                    "subAction": "open-standup-board",
-                    "team": this.team
-                  })}`,
-                  url: `${sprintBoardUrl}`
-                }
-              ]
-            }
-          },
-        ],
-      };
-      messages.push(statusTableMessage);
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "Open Board"
+                    },
+                    value: `${JSON.stringify({
+                      "subAction": "open-standup-board",
+                      "team": this.team
+                    })}`,
+                    url: `${sprintBoardUrl}`
+                  }
+                ]
+              }
+            },
+          ],
+        };
+        data.tasks.sort((a, b) =>  a.status.localeCompare(b.status));
+        data.tasks.forEach((task) => {
+          const dueDate = task.due_date ? new Date(parseInt(task.due_date)).toLocaleDateString("en-GB") : "No due date";
+          const points = task.points || 0;
+          const status = task.status;
+
+          const taskBlocks = [
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: `• ${task.name}`,
+              },
+            },
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "mrkdwn",
+                  text: `Status: \`${status}\`  |  Due: \`${dueDate}\`  |  Story Points: \`${points}\`  |  <${task.url}|View>`,
+                },
+              ],
+            },
+          ];
+
+          // if block length is greater than MAX_BLOCKS, do not add the task block
+          // +1 for the divider
+          if (message.blocks.length + taskBlocks.length + 1 > this.MAX_BLOCKS) {
+            return;
+          }
+
+          message.blocks.push(...taskBlocks);
+        });
+
+        message.blocks.push({
+          type: "divider",
+        });
+        messages.push(message);
+      });
+
+      const shouldShowStatusTable = this.slackData.features?.showStatusTableInStandup;
+      if (shouldShowStatusTable) {
+        // Add summary table by status
+        const mrkdwnText = this.formatTaskStatusTable(summaryByStatus);
+        const statusTableMessage = {
+          text: "Task Summary by Status",
+          blocks: [
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: "*📌 Task Status Summary*",
+              }
+            },
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: mrkdwnText
+              },
+              accessory: {
+                type: "overflow",
+                action_id: "more_options",
+                options: [
+                  {
+                    text: {
+                      type: "plain_text",
+                      text: "Open Board"
+                    },
+                    value: `${JSON.stringify({
+                      "subAction": "open-standup-board",
+                      "team": this.team
+                    })}`,
+                    url: `${sprintBoardUrl}`
+                  }
+                ]
+              }
+            },
+          ],
+        };
+        messages.push(statusTableMessage);
+      }
+      return messages;
+    } catch (error) {
+      console.error("Error in formatStandupSummaryForSlack");
+      throw error;
     }
-    return messages;
   }
 
   formatTaskStatusTable(statusMap) {

@@ -295,7 +295,7 @@ class ClickUpService {
         console.log({ hasMoreTasks, page });
       } catch (error) {
         console.error("Failed to fetch ClickUp tasks:", error.response ? error.response.data : error.message);
-        hasMoreTasks = false;
+        throw error;
       }
     }
 
@@ -502,59 +502,64 @@ class ClickUpService {
   }
 
   async summarizeTasksForStandup({ listId, statuses = this.standupStatuses, assignees = this.assignees }) {
-    console.log("Fetching tasks for list:", listId);
-    const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses, assignees });
-    if (!tasks) {
-      console.log("No tasks found");
-      return null;
-    }
-    console.log("Tasks fetched:", tasks.length);
+    try {
+      console.log("Fetching tasks for list:", listId);
+      const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses, assignees });
+      if (!tasks?.length) {
+        console.log("No tasks found");
+        return null;
+      }
+      console.log("Tasks fetched:", tasks.length);
 
-    const summaryByAssignee = {};
-    const summaryByStatus = {};
+      const summaryByAssignee = {};
+      const summaryByStatus = {};
 
-    // Helper function to process a single task
-    const processTask = (task) => {
-      if (!task.assignees || !Array.isArray(task.assignees)) return;
+      // Helper function to process a single task
+      const processTask = (task) => {
+        if (!task.assignees || !Array.isArray(task.assignees)) return;
 
-      task.assignees.forEach((assignee) => {
-        const assigneeEmail = assignee.email;
+        task.assignees.forEach((assignee) => {
+          const assigneeEmail = assignee.email;
 
-        if (!summaryByAssignee[assigneeEmail]) {
-          summaryByAssignee[assigneeEmail] = {
-            tasks: [],
-          };
+          if (!summaryByAssignee[assigneeEmail]) {
+            summaryByAssignee[assigneeEmail] = {
+              tasks: [],
+            };
+          }
+
+          summaryByAssignee[assigneeEmail].tasks.push({
+            id: task.id,
+            name: task.name,
+            status: task.status?.status || "No Status",
+            url: task.url,
+            points: task.points,
+            due_date: task.due_date,
+          });
+        });
+
+        if (!summaryByStatus[task.status?.status]) {
+          summaryByStatus[task.status?.status] = [];
         }
 
-        summaryByAssignee[assigneeEmail].tasks.push({
+        summaryByStatus[task.status?.status].push({
           id: task.id,
           name: task.name,
-          status: task.status?.status || "No Status",
           url: task.url,
           points: task.points,
           due_date: task.due_date,
         });
-      });
+      };
 
-      if (!summaryByStatus[task.status?.status]) {
-        summaryByStatus[task.status?.status] = [];
+      // Process all tasks in the response
+      if (tasks && Array.isArray(tasks)) {
+        tasks.forEach(processTask);
       }
 
-      summaryByStatus[task.status?.status].push({
-        id: task.id,
-        name: task.name,
-        url: task.url,
-        points: task.points,
-        due_date: task.due_date,
-      });
-    };
-
-    // Process all tasks in the response
-    if (tasks && Array.isArray(tasks)) {
-      tasks.forEach(processTask);
+      return { summaryByAssignee, summaryByStatus };
+    } catch (error) {
+      console.error("Error in summarizeTasksForStandup");
+      throw error;
     }
-
-    return { summaryByAssignee, summaryByStatus };
   }
 
   getSprintBoardUrl(sprintId) {
