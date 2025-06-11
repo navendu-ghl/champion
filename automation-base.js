@@ -79,8 +79,6 @@ class AutomationBase {
                 return typeof jsonValue === value.toLowerCase();
             }
 
-            console.log({ operator, jsonValue, value });
-
             switch (operator) {
                 case '$eq': return jsonValue === value;
                 case '$ne': return jsonValue !== value;

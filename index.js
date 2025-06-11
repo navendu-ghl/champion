@@ -170,21 +170,25 @@ async function handleSlackInteraction(req, res) {
 }
 
 async function runAutomation(context, action, params = {}) {
-
-    const { team, mode = 'review', ...rest } = params;
-    const configManager = new ConfigManager(context);
-    configManager.enableAutomation(action);
-    const config = configManager.getConfig();
-    Object.values(config).forEach(automation => {
-        automation.then.data.mode = mode || 'review';
-        automation.then.data.team = team;
-        automation.then.data = {
-            ...automation.then.data,
-            ...rest
-        }
-    });
-    const automationManager = new AutomationManager(config);
-    return automationManager.runAutomations(context);
+    try {
+        const { team, mode = 'review', ...rest } = params;
+        const configManager = new ConfigManager(context);
+        configManager.enableAutomation(action);
+        const config = configManager.getConfig();
+        Object.values(config).forEach(automation => {
+            automation.then.data.mode = mode || 'review';
+            automation.then.data.team = team;
+            automation.then.data = {
+                ...automation.then.data,
+                ...rest
+            }
+        });
+        const automationManager = new AutomationManager(config);
+        return automationManager.runAutomations(context);
+    } catch (error) {
+        console.error('Error running automation:', error.message);
+        throw error;
+    }
 }
 
 // handleTaskAutomation()

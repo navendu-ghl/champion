@@ -8,7 +8,6 @@ class ClickUpService {
   // apiKey = JSON.parse(process.env.CLICKUP_API_KEY || "{}").CLICKUP_API_KEY
 
   constructor({ team }) {
-    console.log({ team });
     this.CLICKUP_WORKSPACE_ID = '8631005';
     this.CLICKUP_SPRINT_FOLDER_ID = clickupData[team].sprintFolderId;
     this.customFields = clickupData[team].customFields || [];

@@ -33,7 +33,6 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
       // Get task summary from ClickUp
       const currentSprintId = await this.clickupService.fetchCurrentSprint();
-      console.log({ currentSprintId });
       const sprintBoardUrl = this.clickupService.getSprintBoardUrl(currentSprintId);
       const summary = await this.clickupService.summarizeTasksForStandup({ listId: currentSprintId, assignees: this.subAction === 'refresh-standup-summary' ? this.assignees : undefined });
 
@@ -66,7 +65,6 @@ class PostStandupSummaryAutomation extends AutomationBase {
         throw new Error("sendStandupSummaryForReview: User ID not found");
       }
       const channelId = await this.slackService.openDmChannel(userId);
-      console.log({ userId, channelId });
       const response = await this.slackService.postMessage({ message: parentMessage, channelId });
       if (response.ok && response.ts) {
         for (const message of messages) {
@@ -105,7 +103,6 @@ class PostStandupSummaryAutomation extends AutomationBase {
         throw new Error("refreshStandupSummary: Channel ID or message TS not found");
       }
      const response = await this.slackService.updateMessage({ message, channelId, messageTs });
-     console.log({ response });
     } catch (error) {
       console.error("Error refreshing standup summary:", error);
       throw error;
