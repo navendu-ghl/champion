@@ -75,7 +75,10 @@
             "qa complete",
             "task - in progress",
             "task - blocked",
-            "ready for deploy"
+            "ready for deploy",
+            "new ticket",
+            "general support request",
+            "blocked"
         ],
         "closedStatuses": [
             "task - complete",
