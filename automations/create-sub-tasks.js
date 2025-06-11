@@ -38,7 +38,6 @@ class CreateSubTasksAutomation extends AutomationBase {
       });
 
       const subTasks = await Promise.all(subTasksData.map((subTask) => this.clickupService.createTask(task.list.id, subTask)));
-      // console.log({ subTasks: JSON.stringify(subTasksData, null, 2) });
     } catch (error) {
       console.error("Error adding custom fields:", error);
       throw error;
