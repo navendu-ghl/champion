@@ -503,15 +503,14 @@ class ClickUpService {
   async summarizeTasksForStandup({ listId, statuses = this.standupStatuses, assignees = this.assignees }) {
     try {
       console.log("Fetching tasks for list:", listId);
+      const summaryByAssignee = {};
+      const summaryByStatus = {};
       const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses, assignees });
       if (!tasks?.length) {
         console.log("No tasks found");
-        return null;
+        return {summaryByAssignee, summaryByStatus};
       }
       console.log("Tasks fetched:", tasks.length);
-
-      const summaryByAssignee = {};
-      const summaryByStatus = {};
 
       // Helper function to process a single task
       const processTask = (task) => {
