@@ -143,7 +143,8 @@
         "sprintFolderId": "90020142803",
         "members": [
             "jees.denny@gohighlevel.com",
-            "srirang.sathyan@gohighlevel.com"
+            "srirang.sathyan@gohighlevel.com",
+            "sharmila.r@gohighlevel.com"
         ],
         "statuses": [
             "todo",
@@ -190,11 +191,13 @@
             "ritvik.munjal@gohighlevel.com",
             "shareef@gohighlevel.com",
             "sravani@gohighlevel.com",
-            "badiginti.murali@gohighlevel.com"
+            "badiginti.murali@gohighlevel.com",
+            "ayesha.khan@gohighlevel.com",
+            "pavan@gohighlevel.com"
         ]
     },
     "leadgen-payments-integrations": {
-        "sprintFolderId": "90164191795",
+        "sprintFolderId": "5552209",
         "members": [
             "abhansh.giri@gohighlevel.com",
             "aditya.gholkar@gohighlevel.com",
@@ -204,13 +207,22 @@
             "mohammed.zihan@gohighlevel.com"
         ]
     },
+    "leadgen-payments-growth": {
+        "sprintFolderId": "90164191795",
+        "members": [
+            "nitin.nithilesh@gohighlevel.com"
+        ]
+    },
     "leadgen-payments-core": {
         "sprintFolderId": "90163848877",
         "members": [
             "aditya.gholkar@gohighlevel.com",
+            "aditya.shukla@gohighlevel.com",
+            "akhil.sharma@gohighlevel.com",
             "raghul.s@gohighlevel.com",
             "saravanakumar@gohighlevel.com",
-            "shareef@gohighlevel.com"
+            "shareef@gohighlevel.com",
+            "monu.vishwakarma@gohighlevel.com"
         ]
     },
     "leadgen-payments-product": {
@@ -218,7 +230,9 @@
         "members": [
             "lucky.jain@gohighlevel.com",
             "manit.shah@gohighlevel.com",
-            "vatsal.mehta@gohighlevel.com"
+            "vatsal.mehta@gohighlevel.com",
+            "jay.s@gohighlevel.com",
+            "ankur.yadav@gohighlevel.com"
         ]
     }
 }

@@ -180,6 +180,10 @@
             "srirang.sathyan@gohighlevel.com": {
                 "name": "Srirang Sathyan",
                 "slackId": "U07JRK8J0K1"
+            },
+            "sharmila.r@gohighlevel.com": {
+                "name": "Sharmila R",
+                "slackId": "U062P8K0PK3"
             }
         },
         "features": {
@@ -210,6 +214,14 @@
             "badiginti.murali@gohighlevel.com": {
                 "name": "Badiginti Murali",
                 "slackId": "U08V8QXQ6HE"
+            },
+            "ayesha.khan@gohighlevel.com": {
+                "name": "Ayesha Khan",
+                "slackId": "U08J8QPFWQG"
+            },
+            "pavan@gohighlevel.com": {
+                "name": "Pavan",
+                "slackId": "U075NSDF40Z"
             }
         },
         "features": {
@@ -217,6 +229,40 @@
         }
     },
     "leadgen-payments-integrations": {
+        "internalChannel": "C061W1GR9NX",
+        "reviewer": "U08NFJZP45U",
+        "userGroup": "S09194MCS56",
+        "members": {
+            "abhansh.giri@gohighlevel.com": {
+                "name": "Abhansh Giri",
+                "slackId": "U05M27RU42G"
+            },
+            "aditya.gholkar@gohighlevel.com": {
+                "name": "Aditya Gholkar",
+                "slackId": "U07TF2NJSBV"
+            },
+            "arpit.gupta@gohighlevel.com": {
+                "name": "Arpit Gupta",
+                "slackId": "U069NBRJX3L"
+            },
+            "nitin.nithilesh@gohighlevel.com": {
+                "name": "Nitin Nithilesh",
+                "slackId": "U07KAJAD13Q"
+            },
+            "saravanakumar@gohighlevel.com": {
+                "name": "Saravanakumar P",
+                "slackId": "U045YKP5K8S"
+            },
+            "mohammed.zihan@gohighlevel.com": {
+                "name": "Zihan",
+                "slackId": "U08NFK07DJS"
+            }
+        },
+        "features": {
+            "showStatusTableInStandup": true
+        }
+    },
+    "leadgen-payments-growth": {
         "internalChannel": "C061W1GR9NX",
         "reviewer": "U08NFJZP45U",
         "userGroup": "S09194MCS56",
@@ -259,6 +305,14 @@
                 "name": "Aditya Gholkar",
                 "slackId": "U07TF2NJSBV"
             },
+            "aditya.shukla@gohighlevel.com": {
+                "name": "Aditya Shukla",
+                "slackId": "U08TF04ALFQ"
+            },
+            "akhil.sharma@gohighlevel.com": {
+                "name": "Akhil Sharma",
+                "slackId": "U08QE6ABMQQ"
+            },
             "raghul.s@gohighlevel.com": {
                 "name": "Raghul S",
                 "slackId": "U0603RSRH0C"
@@ -270,6 +324,10 @@
             "shareef@gohighlevel.com": {
                 "name": "Shareef P",
                 "slackId": "U046WJFNP42"
+            },
+            "monu.vishwakarma@gohighlevel.com": {
+                "name": "Monu Vishwakarma",
+                "slackId": "U08H077NK5F"
             }
         },
         "features": {
@@ -292,6 +350,14 @@
             "vatsal.mehta@gohighlevel.com": {
                 "name": "Vatsal Mehta",
                 "slackId": "U06493HASKC"
+            },
+            "jay.s@gohighlevel.com": {
+                "name": "Jay S",
+                "slackId": "U078X3J431N"
+            },
+            "ankur.yadav@gohighlevel.com": {
+                "name": "Ankur Yadav",
+                "slackId": "U082092J6EN"
             }
         },
         "features": {
