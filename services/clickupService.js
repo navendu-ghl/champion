@@ -508,7 +508,7 @@ class ClickUpService {
       const tasks = await this.fetchTasksByListId({ listId, excludeStories: true, statuses, assignees });
       if (!tasks?.length) {
         console.log("No tasks found");
-        return {summaryByAssignee, summaryByStatus};
+        return { summaryByAssignee, summaryByStatus };
       }
       console.log("Tasks fetched:", tasks.length);
 

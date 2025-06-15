@@ -360,7 +360,7 @@ class SlackService {
   formatStandupSummaryForSlack({ summary, sprintBoardUrl }) {
     try {
       const { summaryByAssignee, summaryByStatus } = summary;
-      if (!Object.keys(summaryByAssignee).length) return ["No tasks found."];
+      if (!Object.keys(summaryByAssignee).length) throw new Error("No tasks found.");
 
       const messages = [];
       const date = new Date().toLocaleDateString();
