@@ -282,7 +282,7 @@ class ClickUpService {
 
     while (hasMoreTasks) {
       // this API has a defaukt limit of 100 tasks per page
-      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${statuses.map((status) => `statuses=${status}`).join("&")}&${assignees.map((assignee) => `assignees=${assignee}`).join("&")}&page=${page}`;
+      const url = `${this.clickupBaseUrl}/list/${listId}/task?include_timl=true&subtasks=true&custom_fields=${JSON.stringify(this.customFields)}&${statuses.map((status) => `statuses=${status}`).join("&")}&${assignees.map((assignee) => `assignees[]=${assignee}`).join("&")}&page=${page}`;
 
       console.log({ url });
       try {

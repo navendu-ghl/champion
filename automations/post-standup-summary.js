@@ -33,6 +33,9 @@ class PostStandupSummaryAutomation extends AutomationBase {
 
       // Get task summary from ClickUp
       const currentSprintId = await this.clickupService.fetchCurrentSprint();
+      if(!currentSprintId) {
+        throw new Error("No current sprint found");
+      }
       const sprintBoardUrl = this.clickupService.getSprintBoardUrl(currentSprintId);
       const summary = await this.clickupService.summarizeTasksForStandup({ listId: currentSprintId, assignees: this.subAction === 'refresh-standup-summary' ? this.assignees : undefined });
 

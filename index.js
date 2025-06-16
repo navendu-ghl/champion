@@ -117,7 +117,7 @@ async function handleGeneralAutomation(req, res) {
     } catch (error) {
         console.error('Error running general automation:', error.message);
         if (isApiCall) {
-            return res.status(500).send(`Error running general automation, Action: ${action}, Team: ${team}`);
+            return res.status(500).send(`Error running general automation, Action: ${action}, Team: ${team} error: ${error.message}`);
         }
         throw error;
     }
