@@ -83,7 +83,7 @@
     },
     "mobile": {
         "internalChannel": "GN1KGTUG1",
-        "reviewer": "U04SYPXRXQ9",
+        "reviewer": "U07H59XPV43",
         "userGroup": "S01DP01CYHG",
         "members": {
             "smit.sonani@gohighlevel.com": {
@@ -170,7 +170,7 @@
     },
     "leadgen-payments-documents": {
         "internalChannel": "C06L39YUW9Z",
-        "reviewer": "U08NFJZP45U",
+       "reviewer": "U07H59XPV43",
         "userGroup": "S09194MCS56",
         "members": {
             "jees.denny@gohighlevel.com": {
@@ -192,7 +192,7 @@
     },
     "leadgen-payments-ecomm": {
         "internalChannel": "C06CM2S9ZQF",
-        "reviewer": "U08NFJZP45U",
+        "reviewer": "U07H59XPV43",
         "userGroup": "S09194MCS56",
         "members": {
             "abu.siddiq@gohighlevel.com": {
@@ -230,7 +230,7 @@
     },
     "leadgen-payments-integrations": {
         "internalChannel": "C061W1GR9NX",
-        "reviewer": "U08NFJZP45U",
+        "reviewer": "U07H59XPV43",
         "userGroup": "S09194MCS56",
         "members": {
             "abhansh.giri@gohighlevel.com": {
@@ -298,7 +298,7 @@
     },
     "leadgen-payments-core": {
         "internalChannel": "C061W1GR9NX",
-        "reviewer": "U08NFJZP45U",
+        "reviewer": "U07H59XPV43",
         "userGroup": "S09194MCS56",
         "members": {
             "aditya.gholkar@gohighlevel.com": {
@@ -336,7 +336,7 @@
     },
     "leadgen-payments-product": {
         "internalChannel": "C061W1GR9NX",
-        "reviewer": "U08NFJZP45U",
+        "reviewer": "U07H59XPV43",
         "userGroup": "S09194MCS56",
         "members": {
             "lucky.jain@gohighlevel.com": {
