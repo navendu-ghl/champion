@@ -21,7 +21,9 @@ class TaskAutomationContext extends AutomationContext {
 
 class GeneralAutomationContext extends AutomationContext {
     constructor(config) {
-        super(config);
+        // Create a deep copy of the config to avoid sharing state between requests
+        const configInstance = JSON.parse(JSON.stringify(config));
+        super(configInstance);
     }
 }
 
