@@ -19,6 +19,22 @@ class ConfigManager {
         if (!this.clickUpHelper) throw new Error('ClickUpHelper not found');
 
         return {
+            addTags: {
+                id: "add-tags",
+                name: "Add Tags",
+                automationFile: "add-tags",
+                enabled: false,
+                metadata: { manualActionCount: 0 },
+                when: {
+                    $or: [
+                        { "creator.email": { $in: clickupData["automation-calendars"].members } }
+                    ]
+                },
+                then: {
+                    action: "add_tags",
+                    data: {}
+                }
+            },
             addDefaultCustomFields: {
                 id: "add-default-custom-fields",
                 name: "Add Default Custom Fields for Specific Creator",
